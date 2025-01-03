@@ -1,65 +1,83 @@
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
-import Cookie from "js-cookie";
+import Cookie from 'js-cookie';
 import React, { useEffect, useState } from 'react';
-import { GoogleLogin } from 'react-google-login';
-import { useNavigate } from "react-router";
-import env from "../../env.json";
+import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
+import env from '../../env.json';
 import './login.css';
 
+function decodeJWT(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+      .join('')
+  );
+
+  return JSON.parse(jsonPayload);
+}
 
 function Login() {
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();  // Prevent the default form submit behavior
+    e.preventDefault(); // Prevent the default form submit behavior
     const hashedPassword = sha256(password).toString();
     const data = {
       Email: email,
-      Password: hashedPassword
+      Password: hashedPassword,
     };
 
-    axios.post(`${env.api}/auth/login`, data, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then((response) => {
-      Cookie.set("signed_in_user", JSON.stringify(response.data));
-      console.log("Response Data:", response.data); // Print the response data to the console
-      navigate("/");
+    try {
+      const response = await axios.post(`${env.api}/auth/login`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      Cookie.set('signed_in_user', JSON.stringify(response.data));
+      navigate('/');
       window.location.reload();
-    }).catch((error) => {
-      alert("Invalid email or password");
-      console.log(error);
-    });
+    } catch (error) {
+      alert('Invalid email or password');
+      console.error(error);
+    }
   };
 
-  const handleGoogleLogin = async (googleData) => {
-    const { tokenObj } = googleData;
+  const handleGoogleLogin = async (credentialResponse) => {
+    if (credentialResponse.credential) {
+      const decoded = decodeJWT(credentialResponse.credential);
+      const token = sha256(decoded.sub).toString();
+
+      const googleData = {
+        Username: decoded.name,
+        Email: decoded.email,
+        Password: token, 
+      };
+
     try {
-      const response = await axios.post(`${env.api}/users/googleLogin`, {
-        token: tokenObj.id_token
-      }, {
+      const response = await axios.post(`${env.api}/auth/login`, googleData, {
         headers: {
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
-      if (response.data && response.status === 200) {
-        Cookie.set("signed_in_user", response.data);
-        navigate("/");
-        window.location.reload();
-      }
+      Cookie.set('signed_in_user', JSON.stringify(response.data));
+      navigate('/');
+      window.location.reload();
     } catch (error) {
-      console.log(error);
+      alert('Invalid email or password');
+      console.error(error);
     }
+  };
+
   };
 
   useEffect(() => {
     document.body.classList.add('no-scroll');
-
     return () => {
       document.body.classList.remove('no-scroll');
     };
@@ -72,28 +90,45 @@ function Login() {
         <div className="login-form">
           <div className="form-group">
             <label htmlFor="email">Email:</label>
-            <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div className="form-group">
             <label htmlFor="password">Password:</label>
-            <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
-          <button type="submit" className="login-button" onClick={handleSubmit}>Login</button>
+          <button
+            type="submit"
+            className="login-button"
+            onClick={handleSubmit}
+          >
+            Login
+          </button>
           <div className="separator">Do you want to continue with Google?</div>
           <GoogleLogin
-            clientId="YOUR_GOOGLE_CLIENT_ID"
-            buttonText="Login with Google"
             onSuccess={handleGoogleLogin}
-            onFailure={handleGoogleLogin}
-            cookiePolicy={'single_host_origin'}
+            onError={() => {
+              console.error('Google Login Failed');
+            }}
           />
           <div className="terms">
-            By clicking continue, you agree to our <strong>Terms of Service</strong> and <strong>Privacy policy</strong>
+            By clicking continue, you agree to our{' '}
+            <strong>Terms of Service</strong> and <strong>Privacy policy</strong>
           </div>
         </div>
       </div>
     </div>
-
   );
 }
 
