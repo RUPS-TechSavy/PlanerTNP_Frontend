@@ -28,6 +28,7 @@ function Login() {
       }
     }).then((response) => {
       Cookie.set("signed_in_user", JSON.stringify(response.data));
+      console.log("Response Data:", response.data); // Print the response data to the console
       navigate("/");
       window.location.reload();
     }).catch((error) => {

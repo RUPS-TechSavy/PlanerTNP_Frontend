@@ -6,6 +6,7 @@ import './todoList.css';
 
 function TodoList() {
     const [tasks, setTasks] = useState([]);
+    const [legend, setLegend] = useState({});
     const [showDescriptionModal, setShowDescriptionModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [showModal, setShowModal] = useState(false);
@@ -32,14 +33,29 @@ function TodoList() {
         '#1abc9c', '#2ecc71', '#3498db', '#9b59b6', '#f1c40f', '#e67e22', '#e74c3c', '#34495e', '#95a5a6', '#7f8c8d'
     ];
 
+    const colorMap = {
+      green1: '#1abc9c', // turquoise
+      green2: '#2ecc71', // green
+      blue: '#3498db',   // blue
+      purple: '#9b59b6', // purple
+      yellow: '#f1c40f', // yellow
+      orange: '#e67e22', // orange
+      red: '#e74c3c',    // red
+      black: '#34495e',  // navy
+      silver: '#95a5a6', // gray
+      gray: '#7f8c8d',   // darkgray
+    };
+
     useEffect(() => {
         const user = JSON.parse(Cookie.get("signed_in_user"));
-        axios.get(`${env.api}/task/user/${user._id}/tasks`).then((response) => {
+        console.log("Parsed Cookie Data:", user);
+    axios.get(`${env.api}/task/user/${user._id}/tasks`).then((response) => {
             setTasks(response.data.tasks);
-        }).catch((error) => {
+          setLegend(user.legend || {}); // Default to an empty object if no legend exists
+    }).catch((error) => {
             console.log(error);
         });
-    }, [showModal]);
+    }, [showModal,showColorModal]);
 
     const handleDeleteTask = async (id) => {
         const user = JSON.parse(Cookie.get("signed_in_user"));
@@ -94,9 +110,32 @@ function TodoList() {
         }));
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (newTask.name.trim() === '') return;
+  const saveLegend = () => {
+    const user = JSON.parse(Cookie.get("signed_in_user"));
+    console.log("Saved Legend Data:", legend);
+    const updatedUser = { ...user, legend }; // Posodobi samo legend
+    const updatedLegend = {
+      legend: legend, // Predpostavlja se, da imaš spremenljivko "legend", ki vsebuje nove podatke
+  };
+    axios.put(`${env.api}/auth/user/${user._id}/update-data`, updatedLegend)
+    .then((response) => {
+      alert("Legend updated successfully!");
+      setShowColorModal(false); // Close modal
+      Cookie.set("signed_in_user", JSON.stringify(updatedUser)); // Posodobi Cookie
+    })
+    .catch((error) => {
+      console.error("Error updating legend:", error);
+      alert("Failed to update legend.");
+    });
+    
+  };
+  
+
+  // Handle submitting the new task
+  const handleSubmit = (e) => {
+    
+    e.preventDefault();
+    if (newTask.name.trim() === '') return;
 
         const startDateTime = new Date(newTask.startDateTime);
         const endDateTime = new Date(newTask.endDateTime);
@@ -118,211 +157,59 @@ function TodoList() {
         });
     };
 
-    // Handle task update
-    const handleEditTask = (task) => {
-        setEditTask({
-            ...task
-        });
-        setShowEditModal(true);
-    };
+  // Render tasks
+  const renderTasks = () => {
+    return tasks.map((task, index) => (
+      <li key={index} className="task-item">
+        <div className="task-content">
+          <div
+            className="color-circle"
+            style={{ backgroundColor: task.color }}
+          ></div>
+          <span className={`task-name ${task.urgent ? 'urgent' : ''}`}>
+            {task.name}
+          </span>
+          <span className="task-date">
+            {/* Display start date and end date with time */}
+            {new Date(task.startDateTime).toLocaleString('en-GB')} -{' '}
+            {new Date(task.endDateTime).toLocaleString('en-GB')}
+          </span>
+        </div>
+      </li>
+    ));
+  };
 
-    const handleEditInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setEditTask((prevTask) => ({
-            ...prevTask,
-            [name]: type === 'checkbox' ? checked : value,
-        }));
-    };
-
-    const handleEditSubmit = (e) => {
-        e.preventDefault();
-        if (editTask.name.trim() === '') return;
-
-        const startDateTime = new Date(editTask.startDateTime);
-        const endDateTime = new Date(editTask.endDateTime);
-
-        if (endDateTime < startDateTime) {
-            alert('End date and time cannot be before start date and time.');
-            return;
-        }
-
-        const user = JSON.parse(Cookie.get("signed_in_user"));
-        axios.put(`${env.api}/task/user/${user._id}/tasks/${editTask._id}`, editTask, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            setTasks((prevTasks) => prevTasks.map((task) =>
-                task._id === editTask._id ? { ...editTask } : task
-            ));
-
-            // Close edit modal
-            setShowEditModal(false);
-
-            // Close description modal if open
-            setShowDescriptionModal(false);
-            setSelectedTask(null);
-        }).catch((error) => {
-            console.log(error);
-        });
-    };
-
-
-    const handleDescriptionClick = (task) => {
-        setSelectedTask(task);
-        setShowDescriptionModal(true);
-    };
-
-    const handleCloseDescriptionModal = () => {
-        setShowDescriptionModal(false);
-        setSelectedTask(null);
-    };
-
-    const calculateTimeLeft = (endDateTime) => {
-        const now = new Date();
-        const endDate = new Date(endDateTime);
-        const diff = endDate - now;
-
-        if (diff <= 0) {
-            return "Deadline passed";
-        }
-
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        return `${days} day(s) and ${hours} hour(s) left`;
-    };
-    const filterUpcomingTasks = () => {
-        const now = new Date();
-        const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        return tasks.filter(task => {
-            const startDateTime = new Date(task.startDateTime);
-            return startDateTime > now && startDateTime <= next24Hours;
-        });
-    };
-
-    const renderUpcomingTasks = () => {
-        const upcomingTasks = filterUpcomingTasks();
-
-        if (upcomingTasks.length === 0) {
-            return <p>No tasks starting in the next 24 hours.</p>;
-        }
-
-        return upcomingTasks.map((task, index) => {
-            const startDate = new Date(task.startDateTime);
-            const endDate = new Date(task.endDateTime);
-
-            const startDateStr = startDate.toLocaleDateString('en-GB');
-            const startTimeStr = startDate.toLocaleTimeString('en-GB');
-            const endDateStr = endDate.toLocaleDateString('en-GB');
-            const endTimeStr = endDate.toLocaleTimeString('en-GB');
-
-            return (
-                <li key={index} className="task-item">
-                    <div className="task-content">
-                        <div
-                            className="color-circle"
-                            style={{ backgroundColor: task.color }}
-                        ></div>
-                        <span className={`task-name ${task.urgent ? 'urgent' : ''}`}>
-                            {task.name}
-                        </span>
-                        <span className="task-date">
-                            <i className="fas fa-calendar-alt start-calendar-icon"></i>
-                            {" "}
-                            {startDateStr}
-                            {" "}
-                            <i className="fas fa-clock start-clock-icon"></i>
-                            {" "}
-                            {startTimeStr} -
-                            {" "}
-                            <i className="fas fa-calendar-alt end-calendar-icon"></i>
-                            {" "}
-                            {endDateStr}
-                            {" "}
-                            <i className="fas fa-clock end-clock-icon"></i>
-                            {" "}
-                            {endTimeStr}
-                        </span>
-                        <button
-                            className="description-button"
-                            onClick={() => handleDescriptionClick(task)}
-                        >
-                            More
-                        </button>
-                    </div>
-                </li>
-            );
-        });
-    };
-
-    const renderTasks = () => {
-        const now = new Date();
-        return tasks
-            .filter(task => new Date(task.endDateTime) > now) // Exclude finished tasks
-            .map((task, index) => {
-                const startDate = new Date(task.startDateTime);
-                const endDate = new Date(task.endDateTime);
-
-                // Format start and end dates and times
-                const startDateStr = startDate.toLocaleDateString('en-GB');
-                const startTimeStr = startDate.toLocaleTimeString('en-GB');
-                const endDateStr = endDate.toLocaleDateString('en-GB');
-                const endTimeStr = endDate.toLocaleTimeString('en-GB');
-
-                return (
-                    <li key={index} className="task-item">
-                        <div className="task-content">
-                            <div
-                                className="color-circle"
-                                style={{ backgroundColor: task.color }}
-                            ></div>
-                            <span className={`task-name ${task.urgent ? 'urgent' : ''}`}>
-                                {task.name}
-                            </span>
-                            <span className="task-date">
-                                <i className="fas fa-calendar-alt start-calendar-icon"></i>
-                                {" "}
-                                {startDateStr}
-                                {" "}
-                                <i className="fas fa-clock start-clock-icon"></i>
-                                {" "}
-                                {startTimeStr} -
-                                {" "}
-                                <i className="fas fa-calendar-alt end-calendar-icon"></i>
-                                {" "}
-                                {endDateStr}
-                                {" "}
-                                <i className="fas fa-clock end-clock-icon"></i>
-                                {" "}
-                                {endTimeStr}
-                            </span>
-                            <button
-                                className="description-button"
-                                onClick={() => handleDescriptionClick(task)}
-                            >
-                                More
-                            </button>
-                        </div>
-                    </li>
-                );
-            });
-    };
-
-
-
-    return (
-        <div className="page-background">
-            <div className="todo-container">
-                <h1>My Todos</h1>
-                <div className="todo-list">
-                    <div className="todo-header">
-                        <button className="add-task-button" onClick={handleAddTask}>
-                            +
-                        </button>
-                    </div>
-                    <ul>{renderTasks()}</ul>
-                </div>
-            </div>
+  return (
+    <div className="page-background">
+      <div className="todo-container">
+        <h1>My Todos</h1>
+        <div className="todo-list">
+          <div className="todo-header">
+            <button className="color-modal-button" onClick={() => setShowColorModal(true)} 
+            style={{ marginRight: '10px', backgroundColor: '#3498db',
+                  color: '#fff',
+                  border: 'none',
+                  height: '35px',
+                  borderRadius: '50%',
+                  padding: '0 15px',
+                  fontSize: '16px',
+                  textAlign:'center',
+                  lineHeight: '35px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'}} onMouseOver={() => {
+                    document.querySelector('.color-modal-button').style.backgroundColor = '#2980b9';
+                  }} onMouseOut={() => {
+                    document.querySelector('.color-modal-button').style.backgroundColor = '#3498db';
+                  }}>
+              Colorr Legend
+            </button>
+            <button className="add-task-button" onClick={handleAddTask}>
+              +
+            </button>
+          </div>
+          <ul>{renderTasks()}</ul>
+        </div>
+      </div>
 
             <div className="todo-container">
                 <h1>Upcoming Tasks (Next 24 Hours)</h1>
@@ -536,24 +423,59 @@ function TodoList() {
                                 </label>
                             </div>
 
-                            <div className="modal-buttons">
-                                <button type="submit" className="submit-button">
-                                    Add Task
-                                </button>
-                                <button
-                                    type="button"
-                                    className="cancel-button"
-                                    onClick={handleCloseModal}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            )}
+              {/* Buttons */}
+              <div className="modal-buttons">
+                <button type="submit" className="submit-button">
+                  Add Task
+                </button>
+                <button
+                  type="button"
+                  className="cancel-button"
+                  onClick={handleCloseModal}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-    );
+      )}
+      {showColorModal && (
+      <div className="modal-overlay" onClick={() => setShowColorModal(false)}>
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <h2>Edit Legend</h2>
+          <div className="color-options-modal">
+            {Object.entries(legend).map(([color, value], index) => (
+              <div key={index} className="color-option">
+                <div
+                  className="color-circle"
+                  style={{ backgroundColor: colorMap[color]}} // Uporabi preslikavo
+                ></div>
+                <input
+                  type="text"
+                  value={value}
+                  onChange={(e) => 
+                    setLegend((prev) => ({ ...prev, [color]: e.target.value }))
+                  }
+                  placeholder={`Enter legend for ${color}`}
+                />
+              </div>
+            ))}
+          </div>
+          <div className="modal-buttons">
+            <button
+              className="save-legend-button"
+              onClick={() => saveLegend()}
+            >
+              Save Legend
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    </div>
+  );
 }
 
 export default TodoList;

@@ -6,6 +6,10 @@ import Login from "./components/profile/login";
 import Profile from "./components/profile/profile";
 import Register from "./components/profile/register";
 import TodoList from './components/todos/TodoList';
+import Footer from "./components/footer";
+import PrivacyPolicy from "./components/legal/privacy";
+import TermsOfService from "./components/legal/termsofservice";
+import WebsiteDisclaimer from "./components/legal/webdisclaimer";
 import TodosHistory from './components/todosHistory/todosHistory';
 
 function App() {
@@ -18,8 +22,12 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/todos" element={<TodoList />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} /> 
+        <Route path="/termsofservice" element={<TermsOfService />} /> 
+        <Route path="/webdisclaimer" element={<WebsiteDisclaimer />} /> 
         <Route path="/todosHistory" element={<TodosHistory />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

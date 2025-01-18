@@ -30,6 +30,19 @@ const filters = [
     '#7f8c8d',
 ];
 
+const colorMap = {
+    green1: '#1abc9c', // turquoise
+    green2: '#2ecc71', // green
+    blue: '#3498db',   // blue
+    purple: '#9b59b6', // purple
+    yellow: '#f1c40f', // yellow
+    orange: '#e67e22', // orange
+    red: '#e74c3c',    // red
+    black: '#34495e',  // navy
+    silver: '#95a5a6', // gray
+    gray: '#7f8c8d',   // darkgray
+  };
+
 const tmpdata = [
     { "task_name": "overflow: hidden;", "description": "neke neke", "color": '#e74c3c', "start_time": "2024-10-22T14:00:00", "end_time": "2024-10-22T16:00:00" },
     { "task_name": "task2", "description": "neke neke", "color": '#9b59b6', "start_time": "2024-10-22T14:00:00", "end_time": "2024-10-23T16:00:00" },
@@ -45,12 +58,16 @@ function Calendar() {
     const [tasks, setTasks] = useState([]);
     const [schedules, setSchedules] = useState([]);
     const fileInputRef = useRef(null);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [legend, setLegend] = useState({});
 
     useEffect(() => {
         if (Cookie.get("signed_in_user") !== undefined) {
             const user = JSON.parse(Cookie.get("signed_in_user"));
             setSignedIn(user);
-    
+            setLegend(user.legend);
+            
+
             // Fetch tasks and schedules in parallel
             Promise.all([
                 axios.get(`${env.api}/task/user/${user._id}/tasks`),
@@ -178,6 +195,9 @@ const renderTaskInTimeSlot = (day, slot) => {
         }
     };
 
+    const handleToggleDropdown = () => {
+        setIsDropdownOpen(prev => !prev);
+    };
 
     return (
         <div className="calendar-wrapper">
@@ -188,8 +208,47 @@ const renderTaskInTimeSlot = (day, slot) => {
                         <h2>Week of {currentWeek.toDateString()}</h2>
                         <button className="change-week" onClick={handleNextWeek}>→</button>
                     </div>
-                    <div className="filters">
-                        <div>Filter:</div>
+                    {/* Dropdown button only appears when user is logged in */}
+            {signedIn !== false && (
+                <div className="dropdown-container">
+                    {!isDropdownOpen ? (
+                        <button
+                            className="dropdown-toggle"
+                            onClick={handleToggleDropdown}
+                        >
+                            Open Legend
+                        </button>
+                    ) : (
+                        <div className="dropdown-menu">
+                            <button
+                                className="close-dropdown"
+                                onClick={handleToggleDropdown}
+                            >
+                                Close Legend
+                            </button>
+                            
+                            <p>Legend Content</p>
+                            {/* Dropdown content */}
+                            <div className="color-options-modal">
+                                {Object.entries(legend).map(([color, value], index) => (
+                                <div key={index} className="color-option" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                <div
+                                    className="color-circle"
+                                    style={{ backgroundColor: colorMap[color] || color, width: '20px', height: '20px', borderRadius: '50%' }}
+                                ></div>
+                                <label className="legend-label">
+                                    {value || `Legend for ${color}`}
+                                </label>
+                            </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+            <div className="filters">
+                        
+                <div>Filter:</div>
                         {filters.map((filter, index) => (
                             <div
                                 key={index}
