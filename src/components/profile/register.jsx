@@ -24,6 +24,14 @@ function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [country, setCountry] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [location, setLocation] = useState('');
+  const [birthdayDay, setBirthdayDay] = useState('');
+  const [birthdayMonth, setBirthdayMonth] = useState('');
+
   const navigate = useNavigate();
   const [isChecked, setIsChecked] = useState(false);
   const [canRegister, setCanRegister] = useState(false);
@@ -49,6 +57,15 @@ function Register() {
       Username: username,
       Email: email,
       Password: hashedPassword,
+      FirstName: firstName || undefined,
+      LastName: lastName || undefined,
+      Country: country || undefined,
+      PhoneNumber: phoneNumber || undefined,
+      Location: location || undefined,
+      Birthday: {
+        Day: birthdayDay || undefined,
+        Month: birthdayMonth || undefined,
+      },
     };
 
     axios
@@ -132,18 +149,70 @@ function Register() {
               required
             />
           </div>
-          <div className="checkbox-container">
-                    <input
-                        type="checkbox"
-                        id="agreeCheckbox"
-                        checked={isChecked}
-                        onChange={handleCheckboxChange}
-                    />
-                    <label htmlFor="agreeCheckbox">
-                        I have read and agree to the <Link to="/privacy">Privacy Policy</Link>, <Link to="/termsofservice">Terms of Service</Link>, and <Link to="/webdisclaimer">Website Disclaimer</Link>.
-                    </label>
+
+          {/* Optional Fields */}
+          <div className="form-group">
+            <label htmlFor="firstName">First Name:</label>
+            <input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
           </div>
-          <button type="submit" className="login-button" disabled={!canRegister}>Register</button>
+          <div className="form-group">
+            <label htmlFor="lastName">Last Name:</label>
+            <input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="country">Country:</label>
+            <input
+              type="text"
+              id="country"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="phoneNumber">Phone Number:</label>
+            <input
+              type="text"
+              id="phoneNumber"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="location">Location:</label>
+            <input
+              type="text"
+              id="location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+          <div className="form-group birthday-group">
+            <label>Birthday:</label>
+            <input
+              type="text"
+              placeholder="Day"
+              value={birthdayDay}
+              onChange={(e) => setBirthdayDay(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Month"
+              value={birthdayMonth}
+              onChange={(e) => setBirthdayMonth(e.target.value)}
+            />
+          </div>
+
+          <button type="submit" className="login-button">Register</button>
         </form>
 
         <div className="separator">

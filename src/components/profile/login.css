@@ -16,7 +16,7 @@ body, html {
     overflow: hidden;
   }
 
-.login-background {
+  .login-background {
     background-image: url('/src/src/bg2.jpg');
     background-size: cover;
     background-position: center;
@@ -25,6 +25,7 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden; /* Prevent extra scrollbars on the page */
 }
 
 .login-container {
@@ -34,10 +35,12 @@ body, html {
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-width: 400px;
+    max-height: 90vh; /* Limit height to 90% of viewport */
+    width: 100%; /* Ensure it adjusts to smaller screens */
     text-align: center;
     font-family: 'Poppins', sans-serif;
+    overflow-y: auto; /* Add vertical scrolling if needed */
 }
-
 
 .login-container h1 {
     color: #2c3e50;
