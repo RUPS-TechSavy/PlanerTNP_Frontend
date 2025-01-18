@@ -237,4 +237,51 @@
     .calendar-grid h3 {
         width: 100vw;
     }
+
+    
+}
+
+.dropdown-container {
+    position: absolute; /* Allows independent positioning */
+    top: 200px; /* Adjust this value to align vertically as needed */
+    left: 20px; /* Moves it all the way to the left of the container */
+    margin: 0; /* Removes any unwanted margins */
+}
+
+.dropdown-toggle {
+    padding: 0.5rem 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.dropdown-toggle:hover {
+    background-color: #2980b9;
+}
+
+.dropdown-menu {
+    padding: 1rem;
+    background-color: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    position: absolute;
+    top: 40px; /* Adjust this to control the vertical position of the dropdown menu */
+    left: 0; /* Keeps the dropdown aligned to the left */
+}
+
+.close-dropdown {
+    padding: 0.5rem 1rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.close-dropdown:hover {
+    background-color: #c0392b;
 }

@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+
+/* Ensure the body and html take up full height */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+/* The main container for the app */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full height of the viewport */
+}
+
+/* The content area that grows to fill available space */
+.app-content {
+    flex: 1; /* Take up remaining space */
+}
+
+/* Footer styles */
+.footer {
+    background-color: #3498db;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: center; /* Center align the footer items */
+    font-family: 'Poppins', sans-serif;
+    width: 100%;
+    z-index: 5;
+}
+
+.footer-text {
+    margin-bottom: 10px;
+    color: #f3f7ff;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.footer-list {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.footer-item {
+    margin: 0 15px;
+}
+
+.footer-item a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #0d1b35;
+    font-size: 18px;
+    transition: color 0.3s;
+}
+
+.footer-item a:hover {
+    color: #f3f7ff;
+}
+
+@media (max-width: 830px) {
+    .footer {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-list {
+        flex-direction: column;
+    }
+
+    .footer-item {
+        margin: 10px 0;
+    }
+}

@@ -6,12 +6,15 @@ import { GoogleLogin } from 'react-google-login';
 import { useNavigate } from 'react-router-dom';
 import env from '../../env.json';
 import './login.css';
+import { Link } from 'react-router-dom'; // If you're using React Router
 
 function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const [isChecked, setIsChecked] = useState(false);
+  const [canRegister, setCanRegister] = useState(false);
 
   useEffect(() => {
     // Disable scrolling when on the register page
@@ -22,9 +25,14 @@ function Register() {
     };
   }, []);
 
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+    setCanRegister(event.target.checked); // Allow registration only if checked
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (isChecked) {
     const hashedPassword = sha256(password).toString();
     const data = {
       Username: username,
@@ -44,6 +52,9 @@ function Register() {
       console.log('Error:', error);
       alert('Username exists.');
     });
+  } else {
+      alert("You must agree to the terms and conditions.");
+    }
   };
 
   const handleGoogleLogin = async (googleData) => {
@@ -58,6 +69,7 @@ function Register() {
       });
       if (response.data && response.status === 200) {
         Cookie.set("signed_in_user", response.data);
+        console.log("Response Data:", response.data); // Print the response data to the console
         navigate("/");
         window.location.reload();
       }
@@ -101,7 +113,18 @@ function Register() {
               required
             />
           </div>
-          <button type="submit" className="login-button">Register</button>
+          <div className="checkbox-container">
+                    <input
+                        type="checkbox"
+                        id="agreeCheckbox"
+                        checked={isChecked}
+                        onChange={handleCheckboxChange}
+                    />
+                    <label htmlFor="agreeCheckbox">
+                        I have read and agree to the <Link to="/privacy">Privacy Policy</Link>, <Link to="/termsofservice">Terms of Service</Link>, and <Link to="/webdisclaimer">Website Disclaimer</Link>.
+                    </label>
+          </div>
+          <button type="submit" className="login-button" disabled={!canRegister}>Register</button>
         </form>
 
         <div className="separator">Or register with <strong>Google</strong></div>
