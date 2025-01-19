@@ -104,6 +104,7 @@ function TodoList() {
 
   const handleCloseModal = () => {
     setShowModal(false);
+    setShowColorModal(false);
     setNewTask({
       name: '',
       urgent: false,
@@ -383,37 +384,23 @@ function TodoList() {
 
   return (
     <div className="page-background">
-      <div className="todo-container">
-        <h1>My Todos</h1>
-        <div className="todo-list">
-          <div className="todo-header">
-            <button className="color-modal-button" onClick={() => setShowColorModal(true)}
-              style={{
-                marginRight: '10px', backgroundColor: '#3498db',
-                color: '#fff',
-                border: 'none',
-                height: '35px',
-                borderRadius: '50%',
-                padding: '0 15px',
-                fontSize: '16px',
-                textAlign: 'center',
-                lineHeight: '35px',
-                cursor: 'pointer',
-                transition: 'background-color 0.3s'
-              }} onMouseOver={() => {
-                document.querySelector('.color-modal-button').style.backgroundColor = '#2980b9';
-              }} onMouseOut={() => {
-                document.querySelector('.color-modal-button').style.backgroundColor = '#3498db';
-              }}>
-              Color Legend
-            </button>
-            <button className="add-task-button" onClick={handleAddTask}>
-              +
-            </button>
-          </div>
-          <ul>{renderTasks()}</ul>
+
+    <div className="todo-container">
+      <h1>My Todos</h1>
+      <div className="todo-list">
+        <div className="todo-header">
+          <button className="color-modal-button" onClick={() => setShowColorModal(true)}>
+            Customize colors
+          </button>
+          <button className="add-task-button" onClick={handleAddTask}>
+            +
+          </button>
         </div>
+        <ul>{renderTasks()}</ul>
       </div>
+    </div>
+
+
 
       <div className="todo-container">
         <h1>Upcoming Tasks (Next 24 Hours)</h1>
@@ -438,6 +425,14 @@ function TodoList() {
               <strong>Time Left Until Deadline:</strong> {calculateTimeLeft(selectedTask.endDateTime)}
             </p>
             <p><strong>Description:</strong> {selectedTask.description}</p>
+
+            <p id="task-status">
+            {selectedTask.urgent ? <strong style={{ color: 'red' }}>Task is urgent!</strong> : ""}
+          </p>
+
+          <p id="task-status">
+            {selectedTask.public ? <strong style={{ color: 'red' }}>Task is public!</strong> : ""}
+          </p>
 
             <button
               className="edit-task-button"
@@ -536,16 +531,7 @@ function TodoList() {
                   multiple
                   value={editTask.groups}
                   onChange={handleEditInputChange}
-                  style={{
-                    display: 'block',
-                    margin: 'auto',
-                    width: '80%',
-                    height: '120px',
-                    borderRadius: '10px',
-                    padding: '10px',
-                    border: '2px solid #ddd',
-                    backgroundColor: '#fff',
-                  }}
+          
                 >
                   {groups.map((group, index) => (
                     <option key={index} value={group.id}>
@@ -555,31 +541,30 @@ function TodoList() {
                 </select>
               </div>
 
-              {/* Urgent Checkbox */}
-              <div className="form-group checkbox-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="urgent"
-                    checked={editTask.urgent}
-                    onChange={handleEditInputChange}
-                  />
-                  Mark as urgent
-                </label>
-              </div>
+          {/* Urgent Checkbox */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <label htmlFor="urgent" style={{ whiteSpace: 'nowrap' }}>Mark as urgent</label>
+            <input
+              type="checkbox"
+              id="urgent"
+              name="urgent"
+              checked={editTask.urgent}
+              onChange={handleEditInputChange}
+            />
+          </div>
 
-              {/* Public Checkbox */}
-              <div className="form-group checkbox-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="public"
-                    checked={editTask.public}
-                    onChange={handleEditInputChange}
-                  />
-                  Make this task public
-                </label>
-              </div>
+          {/* Public Checkbox */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <label htmlFor="public" style={{ whiteSpace: 'nowrap' }}>Make this task public</label>
+            <input
+              type="checkbox"
+              id="public"
+              name="public"
+              checked={editTask.public}
+              onChange={handleEditInputChange}
+            />
+          </div>
+
 
               <div className="modal-buttons">
                 <button type="submit" className="submit-button">
@@ -667,6 +652,7 @@ function TodoList() {
                   placeholder="Enter task description"
                 />
               </div>
+              
 
               {/* Select Groups */}
               <div className="form-group">
@@ -677,16 +663,6 @@ function TodoList() {
                   multiple
                   value={newTask.groups}
                   onChange={handleInputChange}
-                  style={{
-                    display: 'block',
-                    margin: 'auto',
-                    width: '80%',
-                    height: '120px',
-                    borderRadius: '10px',
-                    padding: '10px',
-                    border: '2px solid #ddd',
-                    backgroundColor: '#fff',
-                  }}
                 >
                   {groups.map((group, index) => (
                     <option key={index} value={group.id}>
@@ -696,30 +672,28 @@ function TodoList() {
                 </select>
               </div>
 
-              {/* Urgent Checkbox */}
-              <div className="form-group checkbox-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="urgent"
-                    checked={newTask.urgent}
-                    onChange={handleInputChange}
-                  />
-                  Mark as urgent
-                </label>
+         {/* Urgent Checkbox */}
+         <div style={{ display: 'flex', alignItems: 'center' }}>
+                <label htmlFor="urgent" style={{ whiteSpace: 'nowrap' }}>Mark as urgent</label>
+                <input
+                  type="checkbox"
+                  id="urgent"
+                  name="urgent"
+                  checked={editTask.urgent}
+                  onChange={handleInputChange}
+                />
               </div>
 
               {/* Public Checkbox */}
-              <div className="form-group checkbox-group">
-                <label>
-                  <input
-                    type="checkbox"
-                    name="public"
-                    checked={newTask.public}
-                    onChange={handleInputChange}
-                  />
-                  Make this task public
-                </label>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <label htmlFor="public" style={{ whiteSpace: 'nowrap' }}>Make this task public</label>
+                <input
+                  type="checkbox"
+                  id="public"
+                  name="public"
+                  checked={editTask.public}
+                  onChange={handleInputChange}
+                />
               </div>
 
               {/* Buttons */}
@@ -742,13 +716,13 @@ function TodoList() {
       {showColorModal && (
         <div className="modal-overlay" onClick={() => setShowColorModal(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <h2>Edit Legend</h2>
+            <h2>Customize colors</h2>
             <div className="color-options-modal">
               {Object.entries(legend).map(([color, value], index) => (
-                <div key={index} className="color-option">
+                <div key={index} className="color-option" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <div
                     className="color-circle"
-                    style={{ backgroundColor: colorMap[color] }} // Uporabi preslikavo
+                    style={{ backgroundColor: colorMap[color], width: '20px', height: '20px', borderRadius: '50%', margin: "12px" }}
                   ></div>
                   <input
                     type="text"
@@ -756,17 +730,22 @@ function TodoList() {
                     onChange={(e) =>
                       setLegend((prev) => ({ ...prev, [color]: e.target.value }))
                     }
-                    placeholder={`Enter legend for ${color}`}
+                    placeholder={`Enter custom name for ${color}`}
+                    style={{ flex: '1' }} // This will allow the input to take up remaining space.
                   />
                 </div>
               ))}
             </div>
             <div className="modal-buttons">
-              <button
-                className="save-legend-button"
-                onClick={() => saveLegend()}
-              >
+              <button className="save-legend-button" onClick={() => saveLegend()}>
                 Save Legend
+              </button>
+              <button
+                type="button"
+                className="cancel-button"
+                onClick={handleCloseModal}
+              >
+                Cancel
               </button>
             </div>
           </div>

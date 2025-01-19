@@ -21,6 +21,7 @@ body {
     padding: 20px;
 }
 
+
 /* Container */
 .todo-container {
     max-width: 1400px;
@@ -115,23 +116,41 @@ body {
     color: red;
 }
 
-/* Add Task Button */
-.add-task-button {
+/* Todo header s flexboxom */
+.todo-header {
+    display: flex;
+    justify-content: space-between; /* Razmakne gumbe na levo in desno stran */
+    align-items: center; /* Poravna gumbe po višini */
+    width: 100%; /* Da se poskrbi, da zavzame celotno širino */
+  }
+  
+  
+  /* Hover učinki za gumbe */
+  .color-modal-button:hover {
     background-color: #3498db;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
+  }
+  
+  
+  /* Stil za gumb "Add Task" (+) */
+  .add-task-button {
     width: 35px;
     height: 35px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 50%;
     font-size: 24px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-    .add-task-button:hover {
-        background-color: #2980b9;
-    }
-
+    line-height: 35px;
+    text-align: center;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .add-task-button:hover {
+    background-color: #2980b9;
+  }
+  
+  
 ul {
     list-style: none;
     margin-top: 20px;
@@ -325,20 +344,28 @@ ul {
     gap: 5px;
 }
 
+.form-group select {
+    width: 100%; 
+    padding: 10px; 
+    border: 2px solid #ddd; 
+    border-radius: 10px; 
+    background-color: #fff; 
+    font-size: 1em; 
+    box-sizing: border-box; 
+    margin: 10px 0; 
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #3498db; 
+}
+
+
 .color-circle.selected {
     border: 2px solid #000;
 }
 
-.checkbox-group {
-    display: flex;
-    align-items: center;
-}
 
-    .checkbox-group label {
-        margin-left: 5px;
-        font-size: 0.9em;
-        color: #555;
-    }
 
 .modal-buttons {
     display: flex;
