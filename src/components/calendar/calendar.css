@@ -17,7 +17,8 @@
     flex-direction: column;
     margin: 20px;
     font-family: 'Poppins', sans-serif;
-    padding-bottom: 30px; /* Space below the calendar */
+    padding-bottom: 30px;
+    /* Space below the calendar */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -72,7 +73,8 @@
     padding: 5px 10px;
     border: 2px solid transparent;
     cursor: pointer;
-    border-radius: 50%; /* Circular shape for color filters */
+    border-radius: 50%;
+    /* Circular shape for color filters */
     width: 30px;
     height: 30px;
 }
@@ -115,7 +117,8 @@
     padding: 5px 10px;
     border: 2px solid transparent;
     cursor: pointer;
-    border-radius: 5px; /* Rectangular shape for group filters */
+    border-radius: 5px;
+    /* Rectangular shape for group filters */
     font-size: 14px;
     font-weight: bold;
     color: #2c3e50;
@@ -149,7 +152,7 @@
 }
 
 .time-label-column {
-    padding-top: 50px; 
+    padding-top: 50px;
     display: grid;
     grid-template-rows: repeat(48, 80px);
     width: 60px;
@@ -157,7 +160,7 @@
     position: sticky;
     left: 0;
     z-index: 1;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 .time-label {
@@ -165,11 +168,11 @@
     justify-content: center;
     align-items: flex-start;
     font-size: 12px;
-    padding: 0; 
+    padding: 0;
     background-color: rgba(245, 245, 245, 0.9);
     height: 80px;
-    box-sizing: border-box; 
-    border-top: 1px solid #ddd; 
+    box-sizing: border-box;
+    border-top: 1px solid #ddd;
 }
 
 .calendar-grid {
@@ -187,25 +190,25 @@
     background-color: rgba(245, 245, 245, 0.9);
     text-align: center;
     margin: 0;
-    height: 50px; 
-    line-height: 50px; 
+    height: 50px;
+    line-height: 50px;
     color: #2c3e50;
     font-size: 16px;
-    box-sizing: border-box; 
-    border-top: 1px solid #ccc; 
+    box-sizing: border-box;
+    border-top: 1px solid #ccc;
 }
 
 .time-slots {
     display: grid;
-    grid-template-rows: repeat(48, 80px); 
+    grid-template-rows: repeat(48, 80px);
 }
 
 .time-slot {
     position: relative;
     background-color: rgba(255, 255, 255, 0.9);
     height: 80px;
-    box-sizing: border-box; 
-    border-top: 1px solid #ddd; 
+    box-sizing: border-box;
+    border-top: 1px solid #ddd;
 
 }
 
@@ -216,7 +219,7 @@
     width: 100%;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start; 
+    justify-content: flex-start;
     /* Placeholder background for content */
     height: 100%;
 }
@@ -262,7 +265,7 @@
 @media (max-width: 830px) {
     .calendar-grid-wrapper {
         flex-direction: column;
-        display:block;
+        display: block;
         /* Stack everything vertically */
     }
 
@@ -291,14 +294,18 @@
         width: 100vw;
     }
 
-    
+
 }
 
 .dropdown-container {
-    position: absolute; /* Allows independent positioning */
-    top: 200px; /* Adjust this value to align vertically as needed */
-    left: 20px; /* Moves it all the way to the left of the container */
-    margin: 0; /* Removes any unwanted margins */
+    position: absolute;
+    /* Allows independent positioning */
+    top: 200px;
+    /* Adjust this value to align vertically as needed */
+    left: 20px;
+    /* Moves it all the way to the left of the container */
+    margin: 0;
+    /* Removes any unwanted margins */
 }
 
 .dropdown-toggle {
@@ -321,8 +328,10 @@
     border: 1px solid #bdc3c7;
     border-radius: 4px;
     position: absolute;
-    top: 40px; /* Adjust this to control the vertical position of the dropdown menu */
-    left: 0; /* Keeps the dropdown aligned to the left */
+    top: 40px;
+    /* Adjust this to control the vertical position of the dropdown menu */
+    left: 0;
+    /* Keeps the dropdown aligned to the left */
 }
 
 .close-dropdown {
@@ -348,36 +357,37 @@
     align-items: center;
     text-align: center;
     padding: 30px;
-    background-color: rgba(240, 240, 240, 0.9); /* Svetla ozadja */
+    background-color: rgba(240, 240, 240, 0.9);
+    /* Svetla ozadja */
     border-radius: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     margin: 20px;
 }
 
-    .not-signed-in h2 {
-        font-size: 24px;
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
+.not-signed-in h2 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
 
-    .not-signed-in p {
-        font-size: 16px;
-        color: #7f8c8d;
-        max-width: 600px;
-        line-height: 1.5;
-    }
+.not-signed-in p {
+    font-size: 16px;
+    color: #7f8c8d;
+    max-width: 600px;
+    line-height: 1.5;
+}
 
-    .not-signed-in a {
-        margin-top: 20px;
-        padding: 10px 20px;
-        background-color: #3498db;
-        color: white;
-        text-decoration: none;
-        font-weight: bold;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-    }
+.not-signed-in a {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
 
-        .not-signed-in a:hover {
-            background-color: #2980b9;
-        }
+.not-signed-in a:hover {
+    background-color: #2980b9;
+}

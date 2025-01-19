@@ -14,7 +14,7 @@ function TodoHistory() {
     // Fetch completed tasks on component mount
     useEffect(() => {
         const user = JSON.parse(Cookie.get("signed_in_user"));
-        axios.get(`${env.api}/task/user/${user._id}/tasks`)
+        axios.get(`${env.api}/task/user/${user._id}/${user.Email}/tasks`)
             .then((response) => {
                 const tasks = response.data.tasks;
                 const endedTasks = tasks.filter(task => new Date(task.endDateTime) < new Date());

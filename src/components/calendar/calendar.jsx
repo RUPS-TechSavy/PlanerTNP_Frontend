@@ -161,46 +161,50 @@ function Calendar() {
 
 
 
-const renderTaskInTimeSlot = (day, slot) => {
-    const dayTasks = tasks.filter(task => {
-        const taskStart = new Date(task.startDateTime);
-        const taskEnd = new Date(task.endDateTime);
+    const renderTaskInTimeSlot = (day, slot) => {
         const slotHour = parseInt(slot.split(":")[0]);
         const slotMinutes = parseInt(slot.split(":")[1]);
-    
-        const slotTime = new Date(day);
-        slotTime.setHours(slotHour, slotMinutes, 0, 0);
-        
-        // Adjust to include entire range on the given day
-        return (taskStart <= slotTime && taskEnd > slotTime);
-    });
 
-    return dayTasks.map((task, index) => {
-        const taskStart = new Date(task.startDateTime);
-        const taskSlotHour = parseInt(slot.split(":")[0]);
-        const taskSlotMinutes = parseInt(slot.split(":")[1]);
-        
-        // Check if this is the first time slot for the task
-        const isFirstSlot = taskStart.getHours() === taskSlotHour && taskStart.getMinutes() === taskSlotMinutes;
+        const slotStartTime = new Date(day);
+        slotStartTime.setHours(slotHour, slotMinutes, 0, 0); 
 
-        return selectedFilter !== null && task.color !== filters[selectedFilter] ? null : (
-            <p 
-            key={index} 
-            className="task-ribbon" 
-            style={{ 
-                backgroundColor: task.color, 
-                borderTop: isFirstSlot ? "1px solid #ddd" : "none", 
-                marginTop: isFirstSlot ? "0" : "-1px", // Compensate for border removal
-                padding: 0, 
-                boxSizing: "border-box"
-            }}
-        >
-            {isFirstSlot && <b>{task.name}</b>}
-        </p>
-        
-        );
-    });
-};
+        const slotEndTime = new Date(slotStartTime);
+        slotEndTime.setMinutes(slotStartTime.getMinutes() + 30); 
+
+        const dayTasks = tasks.filter(task => {
+            const taskStart = new Date(task.startDateTime);
+            const taskEnd = new Date(task.endDateTime);
+
+            return (
+                (taskStart >= slotStartTime && taskStart < slotEndTime) || 
+                (taskStart < slotStartTime && taskEnd > slotStartTime)     
+            );
+        });
+
+        return dayTasks.map((task, index) => {
+            const taskStart = new Date(task.startDateTime);
+
+            const isFirstSlot =
+                taskStart >= slotStartTime &&
+                taskStart < slotEndTime;
+
+            return selectedFilter !== null && task.color !== filters[selectedFilter] ? null : (
+                <p
+                    key={index}
+                    className="task-ribbon"
+                    style={{
+                        backgroundColor: task.color,
+                        borderTop: isFirstSlot ? "1px solid #ddd" : "none",
+                        marginTop: isFirstSlot ? "0" : "-1px", 
+                        padding: 0,
+                        boxSizing: "border-box"
+                    }}
+                >
+                    {isFirstSlot && <b>{task.name}</b>}
+                </p>
+            );
+        });
+    };
 
     const handleFileImport = (event) => {
         const file = event.target.files[0];
@@ -222,222 +226,107 @@ const renderTaskInTimeSlot = (day, slot) => {
     };
 
     return (
-        <div className="calendar-wrapper">
-            {signedIn ? (
-                <div className="calendar-container">
-                    <div className="calendar-header">
-                        <button className="change-week" onClick={handlePrevWeek}>←</button>
-                        <h2>Week of {currentWeek.toDateString()}</h2>
-                        <button className="change-week" onClick={handleNextWeek}>→</button>
-                    </div>
-                    {/* Dropdown button only appears when user is logged in */}
-            {signedIn !== false && (
-                <div className="dropdown-container">
-                    {!isDropdownOpen ? (
-                        <button className="dropdown-toggle" onClick={handleToggleDropdown}>
-                            Open Legend
-                        </button>
-                    ) : (
-                        <div className="dropdown-menu">
-                            <button className="close-dropdown" onClick={handleToggleDropdown}>
-                                Close Legend
+        <div className='calendar-wrapper'>
+            <div className="calendar-container">
+                <div className="calendar-header">
+                    <button className="change-week" onClick={handlePrevWeek}>←</button>
+                    <h2>Week of {currentWeek.toDateString()}</h2>
+                    <button className="change-week" onClick={handleNextWeek}>→</button>
+                </div>
+
+                {/* Dropdown Legend */}
+                {signedIn !== false && (
+                    <div className="dropdown-container">
+                        {!isDropdownOpen ? (
+                            <button className="dropdown-toggle" onClick={handleToggleDropdown}>
+                                Open Legend
                             </button>
-                            <p>Legend Content</p>
-                            <div className="color-options-modal">
-                                {Object.entries(legend).map(([color, value], index) => (
-                                    <div key={index} className="color-option" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                        <div
-                                            className="color-circle"
-                                            style={{ backgroundColor: colorMap[color] || color, width: '20px', height: '20px', borderRadius: '50%' }}
-                                        ></div>
-                                        <label className="legend-label">{value || `Legend for ${color}`}</label>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            )}
-            <div className="filters">
-                        
-                <div>Filter:</div>
-                        {filters.map((filter, index) => (
-                            <div
-                                key={index}
-                                onClick={() => setSelectedFilter(index)}
-                                className={`${selectedFilter === index ? 'active-filter' : 'filter'}`}
-                                style={{ backgroundColor: filter }}
-                            >
-                                ⠀
-                            </div>
-                        ))}
-                        <div className="clear-filter" onClick={() => setSelectedFilter(null)}>Clear</div>
-                    </div>
-                    <div className="calendar-grid-wrapper">
-                        <div className="time-label-column">
-                            {timeSlots.map((slot, slotIndex) => (
-                                <div key={slotIndex} className="time-label">{slot}</div>
-                            ))}
-                        </div>
-                        <div className="calendar-grid">
-                            {weekDays.map((day, index) => (
-                                <div key={index}>
-                                    <h3>{day.toDateString()}</h3>
-                                    <div className="calendar-day">
-                                        <div className="time-slots">
-                                            {timeSlots.map((slot, slotIndex) => (
-                                                <div key={slotIndex} className="time-slot">
-                                                    <div className="content-area">
-                                                        {renderTaskInTimeSlot(day, slot)}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="import-data">
-                        <span>Import your own schedule: </span>
-                        <input
-                            type="file"
-                            accept=".json"
-                            ref={fileInputRef}
-                            onChange={handleFileImport}
-                        />
-                    </div>
-                </div>
-            ) : (
-
-                    <div className="calendar-container">
-
-                        <div className="not-signed-in">
-                            <h2>Wellcome to Planer!</h2>
-                            <p>Sign in to access the calendar functionality and start completing your tasks.</p>
-                        </div>
-
-                    <div className="calendar-header">
-                        <button className="change-week" onClick={handlePrevWeek}>←</button>
-                        <h2>Week of {currentWeek.toDateString()}</h2>
-                        <button className="change-week" onClick={handleNextWeek}>→</button>
-                    </div>
-                    <div className="filters">
-                        <div>Filter:</div>
-                        {filters.map((filter, index) => (
-                            <div
-                                key={index}
-                                onClick={() => setSelectedFilter(index)}
-                                className={`${selectedFilter === index ? 'active-filter' : 'filter'}`}
-                                style={{ backgroundColor: filter }}
-                            >
-                                ⠀
-                            </div>
-                        ))}
-                        <div className="clear-filter" onClick={() => setSelectedFilter(null)}>Clear</div>
-                    </div>
-                    <div className="calendar-grid-wrapper">
-                        <div className="time-label-column">
-                            {timeSlots.map((slot, slotIndex) => (
-                                <div key={slotIndex} className="time-label">{slot}</div>
-                            ))}
-                        </div>
-                        <div className="calendar-grid">
-                            {weekDays.map((day, index) => (
-                                <div key={index}>
-                                    <h3>{day.toDateString()}</h3>
-                                    <div className="calendar-day">
-                                        <div className="time-slots">
-                                            {timeSlots.map((slot, slotIndex) => (
-                                                <div key={slotIndex} className="time-slot">
-                                                    <div className="content-area">
-                                                        {renderTaskInTimeSlot(day, slot)}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="import-data">
-                        <span>Import your own schedule: </span>
-                        <input
-                            type="file"
-                            accept=".json"
-                            ref={fileInputRef}
-                            onChange={handleFileImport}
-                        />
-                    </div>
-                </div>
-                
-
-            )}
-
-            {/* Color Filters */}
-            <div className="color-filters">
-                <div>Color:</div>
-                {filters.map((filter, index) => (
-                    <div
-                        key={index}
-                        onClick={() => setSelectedFilter(index)}
-                        className={`${selectedFilter === index ? 'active-filter' : ''}`}
-                        style={{ backgroundColor: filter }}
-                    ></div>
-                ))}
-                <div className="clear-filter" onClick={() => setSelectedFilter(null)}>Clear</div>
-            </div>
-
-            {/* Group Filters */}
-            <div className="group-filters">
-                <div>Groups:</div>
-                {groups.map((group, index) => (
-                    <div
-                        key={index}
-                        onClick={() => setSelectedGroup(index)}
-                        className={`${selectedGroup === index ? 'active-filter' : ''}`}
-                    >
-                        {group.name}
-                    </div>
-                ))}
-                <div className="clear-filter" onClick={() => setSelectedGroup(null)}>Clear</div>
-            </div>
-
-            {/* Calendar Grid */}
-            <div className="calendar-grid-wrapper">
-                <div className="time-label-column">
-                    {timeSlots.map((slot, slotIndex) => (
-                        <div key={slotIndex} className="time-label">{slot}</div>
-                    ))}
-                </div>
-                <div className="calendar-grid">
-                    {weekDays.map((day, index) => (
-                        <div key={index}>
-                            <h3>{day.toDateString()}</h3>
-                            <div className="calendar-day">
-                                <div className="time-slots">
-                                    {timeSlots.map((slot, slotIndex) => (
-                                        <div key={slotIndex} className="time-slot">
-                                            <div className="content-area">
-                                                {renderTaskInTimeSlot(day, slot)}
-                                            </div>
+                        ) : (
+                            <div className="dropdown-menu">
+                                <button className="close-dropdown" onClick={handleToggleDropdown}>
+                                    Close Legend
+                                </button>
+                                <p>Legend Content</p>
+                                <div className="color-options-modal">
+                                    {Object.entries(legend).map(([color, value], index) => (
+                                        <div key={index} className="color-option" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                            <div
+                                                className="color-circle"
+                                                style={{ backgroundColor: colorMap[color] || color, width: '20px', height: '20px', borderRadius: '50%' }}
+                                            ></div>
+                                            <label className="legend-label">{value || `Legend for ${color}`}</label>
                                         </div>
                                     ))}
                                 </div>
                             </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Color Filters */}
+                <div className="color-filters">
+                    <div>Color:</div>
+                    {filters.map((filter, index) => (
+                        <div
+                            key={index}
+                            onClick={() => setSelectedFilter(index)}
+                            className={`${selectedFilter === index ? 'active-filter' : ''}`}
+                            style={{ backgroundColor: filter }}
+                        ></div>
+                    ))}
+                    <div className="clear-filter" onClick={() => setSelectedFilter(null)}>Clear</div>
+                </div>
+
+                {/* Group Filters */}
+                <div className="group-filters">
+                    <div>Groups:</div>
+                    {groups.map((group, index) => (
+                        <div
+                            key={index}
+                            onClick={() => setSelectedGroup(index)}
+                            className={`${selectedGroup === index ? 'active-filter' : ''}`}
+                        >
+                            {group.name}
                         </div>
                     ))}
+                    <div className="clear-filter" onClick={() => setSelectedGroup(null)}>Clear</div>
                 </div>
-            </div>
 
-            {/* Import Data */}
-            {signedIn !== false && (
-                <div className="import-data">
-                    <span>Import your own schedule: </span>
-                    <input type="file" accept=".json" ref={fileInputRef} onChange={handleFileImport} />
+                {/* Calendar Grid */}
+                <div className="calendar-grid-wrapper">
+                    <div className="time-label-column">
+                        {timeSlots.map((slot, slotIndex) => (
+                            <div key={slotIndex} className="time-label">{slot}</div>
+                        ))}
+                    </div>
+                    <div className="calendar-grid">
+                        {weekDays.map((day, index) => (
+                            <div key={index}>
+                                <h3>{day.toDateString()}</h3>
+                                <div className="calendar-day">
+                                    <div className="time-slots">
+                                        {timeSlots.map((slot, slotIndex) => (
+                                            <div key={slotIndex} className="time-slot">
+                                                <div className="content-area">
+                                                    {renderTaskInTimeSlot(day, slot)}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
-            )}
+
+                {/* Import Data */}
+                {signedIn !== false && (
+                    <div className="import-data">
+                        <span>Import your own schedule: </span>
+                        <input type="file" accept=".json" ref={fileInputRef} onChange={handleFileImport} />
+                    </div>
+                )}
+            </div>
         </div>
     );
 
