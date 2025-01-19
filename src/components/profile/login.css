@@ -16,7 +16,7 @@ body, html {
     overflow: hidden;
   }
 
-.login-background {
+  .login-background {
     background-image: url('/src/src/bg2.jpg');
     background-size: cover;
     background-position: center;
@@ -25,6 +25,7 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden; /* Prevent extra scrollbars on the page */
 }
 
 .login-container {
@@ -34,10 +35,12 @@ body, html {
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     max-width: 400px;
+    max-height: 90vh; /* Limit height to 90% of viewport */
+    width: 100%; /* Ensure it adjusts to smaller screens */
     text-align: center;
     font-family: 'Poppins', sans-serif;
+    overflow-y: auto; /* Add vertical scrolling if needed */
 }
-
 
 .login-container h1 {
     color: #2c3e50;
@@ -99,3 +102,84 @@ body, html {
     font-size: 0.8em;
     color: #666;
 }
+
+
+/* Wider container */
+.login-container {
+    padding: 20px;
+    background-color: rgba(245, 245, 245, 0.7);
+    color: #333;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px; /* Increased width for a wider layout */
+    width: 90%; /* Ensures responsiveness on smaller screens */
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    overflow-y: auto; /* Add vertical scrolling if needed */
+}
+
+/* Checkbox container */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    text-align: left; /* Align text properly */
+    margin-top: 10px;
+    font-size: 0.9em; /* Slightly smaller text */
+    gap: 8px; /* Space between checkbox and text */
+}
+
+.checkbox-container input {
+    margin: 0; /* Removes default margin */
+    cursor: pointer;
+}
+
+.checkbox-container label {
+    display: flex;
+    align-items: center;
+    line-height: 1.2; /* Better spacing for multiline text */
+    font-size: 0.9rem;
+    color: #333;
+}
+
+.checkbox-container a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.checkbox-container a:hover {
+    text-decoration: underline;
+}
+
+/* Input fields */
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px; /* Reduced radius for consistency */
+    background-color: #fff;
+}
+
+.mandatory {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .legend {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: #555;
+  }
+  
+  .toggle-optional {
+    margin: 10px 0;
+    background-color: #9ae9ff;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  
+  .optional-fields {
+    margin-top: 10px;
+  }
+  

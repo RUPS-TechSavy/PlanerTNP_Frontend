@@ -1,16 +1,29 @@
 /* General layout for the calendar */
-.calendar-container {
+
+.calendar-wrapper {
+    background-image: url('/src/src/bg2.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    background-repeat: no-repeat;
     display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+
+
+.calendar-container {
     flex-direction: column;
-    align-items: center;
     margin: 20px;
     font-family: 'Poppins', sans-serif;
-    background-repeat: repeat;
-    background-color: rgba(255, 255, 255, 0.4); 
-    padding-bottom: 30px; /* Space below the calendar */
-
-    
+    padding-bottom: 30px;
+    /* Space below the calendar */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 
 .calendar-header {
     display: flex;
@@ -40,7 +53,9 @@
     color: #2980b9;
 }
 
-.filters {
+
+/* Color Filters */
+.color-filters {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -51,43 +66,80 @@
     border-radius: 20px;
 }
 
-.filters div {
+.color-filters div {
     display: flex;
     align-items: center;
-}
-
-.filter-label {
-    margin-right: 10px;
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.filter,
-.active-filter {
+    justify-content: center;
+    padding: 5px 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    border-radius: 50%;
+    /* Circular shape for color filters */
     width: 30px;
     height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
 }
 
-.active-filter {
+.color-filters .active-filter {
     border-color: #2c3e50;
 }
 
-.filter:hover,
-.active-filter:hover {
+.color-filters div:hover {
     opacity: 0.7;
 }
 
-.clear-filter {
+.color-filters .clear-filter {
     margin-left: 10px;
     cursor: pointer;
     color: #e74c3c;
     font-weight: bold;
 }
 
-.clear-filter:hover {
+.color-filters .clear-filter:hover {
+    text-decoration: underline;
+}
+
+/* Group Filters */
+.group-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: rgba(245, 245, 245, 0.9);
+    border-radius: 20px;
+}
+
+.group-filters div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    border-radius: 5px;
+    /* Rectangular shape for group filters */
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.group-filters .active-filter {
+    border-color: #2c3e50;
+}
+
+.group-filters div:hover {
+    opacity: 0.7;
+}
+
+.group-filters .clear-filter {
+    margin-left: 10px;
+    cursor: pointer;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.group-filters .clear-filter:hover {
     text-decoration: underline;
 }
 
@@ -96,10 +148,11 @@
     border: 2px solid #3498db;
     border-radius: 10px;
     overflow-x: auto;
+    background-color: rgba(245, 245, 245, 0.9);
 }
 
 .time-label-column {
-    padding-top: 50px; 
+    padding-top: 50px;
     display: grid;
     grid-template-rows: repeat(48, 80px);
     width: 60px;
@@ -107,7 +160,7 @@
     position: sticky;
     left: 0;
     z-index: 1;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 .time-label {
@@ -115,11 +168,11 @@
     justify-content: center;
     align-items: flex-start;
     font-size: 12px;
-    padding: 0; 
+    padding: 0;
     background-color: rgba(245, 245, 245, 0.9);
     height: 80px;
-    box-sizing: border-box; 
-    border-top: 1px solid #ddd; 
+    box-sizing: border-box;
+    border-top: 1px solid #ddd;
 }
 
 .calendar-grid {
@@ -137,32 +190,36 @@
     background-color: rgba(245, 245, 245, 0.9);
     text-align: center;
     margin: 0;
-    height: 50px; 
-    line-height: 50px; 
+    height: 50px;
+    line-height: 50px;
     color: #2c3e50;
     font-size: 16px;
-    box-sizing: border-box; 
-    border-top: 1px solid #ccc; 
+    box-sizing: border-box;
+    border-top: 1px solid #ccc;
 }
 
 .time-slots {
     display: grid;
-    grid-template-rows: repeat(48, 80px); 
+    grid-template-rows: repeat(48, 80px);
 }
 
 .time-slot {
     position: relative;
     background-color: rgba(255, 255, 255, 0.9);
     height: 80px;
-    box-sizing: border-box; 
-    border-top: 1px solid #ddd; 
+    box-sizing: border-box;
+    border-top: 1px solid #ddd;
 
 }
+
 
 /* Placeholder for content inside each slot */
 .content-area {
     position: absolute;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
     /* Placeholder background for content */
     height: 100%;
 }
@@ -173,7 +230,6 @@
     box-sizing: border-box;
     color: #fff;
     font-size: 12px;
-    border-radius: 5px;
     overflow: hidden;
 }
 
@@ -209,7 +265,7 @@
 @media (max-width: 830px) {
     .calendar-grid-wrapper {
         flex-direction: column;
-        display:block;
+        display: block;
         /* Stack everything vertically */
     }
 
@@ -237,4 +293,101 @@
     .calendar-grid h3 {
         width: 100vw;
     }
+
+
+}
+
+.dropdown-container {
+    position: absolute;
+    /* Allows independent positioning */
+    top: 200px;
+    /* Adjust this value to align vertically as needed */
+    left: 20px;
+    /* Moves it all the way to the left of the container */
+    margin: 0;
+    /* Removes any unwanted margins */
+}
+
+.dropdown-toggle {
+    padding: 0.5rem 1rem;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.dropdown-toggle:hover {
+    background-color: #2980b9;
+}
+
+.dropdown-menu {
+    padding: 1rem;
+    background-color: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    position: absolute;
+    top: 40px;
+    /* Adjust this to control the vertical position of the dropdown menu */
+    left: 0;
+    /* Keeps the dropdown aligned to the left */
+}
+
+.close-dropdown {
+    padding: 0.5rem 1rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.close-dropdown:hover {
+    background-color: #c0392b;
+}
+
+
+
+.not-signed-in {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 30px;
+    background-color: rgba(240, 240, 240, 0.9);
+    /* Svetla ozadja */
+    border-radius: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 20px;
+}
+
+.not-signed-in h2 {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.not-signed-in p {
+    font-size: 16px;
+    color: #7f8c8d;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+.not-signed-in a {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.not-signed-in a:hover {
+    background-color: #2980b9;
 }

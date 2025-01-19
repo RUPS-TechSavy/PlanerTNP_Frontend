@@ -38,9 +38,6 @@
 }
 
 #root {
-  background-image: url('src/bg2.jpg');
-  background-position: center;
-  background-repeat: repeat; /* Changed from 'repeat' to 'repeat' */
   z-index: -1;
   top: 0;
   left: 0;

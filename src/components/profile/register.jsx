@@ -2,67 +2,108 @@ import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
 import Cookie from 'js-cookie';
 import React, { useEffect, useState } from 'react';
-import { GoogleLogin } from 'react-google-login';
+import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import env from '../../env.json';
 import './login.css';
+import { Link } from 'react-router-dom';
+
+function decodeJWT(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map((c) => `%${`00${c.charCodeAt(0).toString(16)}`.slice(-2)}`)
+      .join('')
+  );
+
+  return JSON.parse(jsonPayload);
+}
 
 function Register() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    country: '',
+    phoneNumber: '',
+    location: '',
+    birthdayDay: '',
+    birthdayMonth: '',
+  });
+  const [isChecked, setIsChecked] = useState(false);
+  const [showOptionalFields, setShowOptionalFields] = useState(false);
+
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // Disable scrolling when on the register page
-    document.body.classList.add('no-scroll');
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    return () => {
-      document.body.classList.remove('no-scroll');
-    };
-  }, []);
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isChecked) return;
 
-    const hashedPassword = sha256(password).toString();
+    const hashedPassword = sha256(formData.password).toString();
     const data = {
-      Username: username,
-      Email: email,
-      Password: hashedPassword
+      Username: formData.username,
+      Email: formData.email,
+      Password: hashedPassword,
+      FirstName: formData.firstName || undefined,
+      LastName: formData.lastName || undefined,
+      Country: formData.country || undefined,
+      PhoneNumber: formData.phoneNumber || undefined,
+      Location: formData.location || undefined,
+      Birthday: {
+        Day: formData.birthdayDay || undefined,
+        Month: formData.birthdayMonth || undefined,
+      },
     };
 
-    axios.post(`${env.api}/auth/register`, data, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    }).then((response) => {
-      Cookie.set("signed_in_user", JSON.stringify(response.data));
-      navigate("/");
+    try {
+      const response = await axios.post(`${env.api}/auth/register`, data);
+      Cookie.set('signed_in_user', JSON.stringify(response.data));
+      navigate('/');
       window.location.reload();
-    }).catch((error) => {
-      console.log('Error:', error);
-      alert('Username exists.');
-    });
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Username exists or registration failed.');
+    }
   };
 
-  const handleGoogleLogin = async (googleData) => {
-    const { tokenObj } = googleData;
-    try {
-      const response = await axios.post(`${env.api}/users/googleRegister`, {
-        token: tokenObj.id_token
-      }, {
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      if (response.data && response.status === 200) {
-        Cookie.set("signed_in_user", response.data);
-        navigate("/");
-        window.location.reload();
-      }
-    } catch (error) {
-      console.log('Error:', error);
+  const handleGoogleLogin = (credentialResponse) => {
+    if (credentialResponse.credential) {
+      const decoded = decodeJWT(credentialResponse.credential);
+      const token = sha256(decoded.sub).toString();
+
+      const googleData = {
+        Username: decoded.name,
+        Email: decoded.email,
+        Password: token,
+      };
+
+      axios
+        .post(`${env.api}/auth/register`, googleData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((response) => {
+          Cookie.set('signed_in_user', JSON.stringify(response.data));
+          navigate('/');
+          window.location.reload();
+        })
+        .catch((error) => {
+          console.log('Error:', error);
+          alert('Google login failed or user already exists.');
+        });
     }
   };
 
@@ -70,47 +111,160 @@ function Register() {
     <div className="login-background">
       <div className="login-container">
         <h1>Register</h1>
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">
+              Username <span className="mandatory">*</span>:
+            </label>
             <input
               type="text"
               id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              name="username"
+              value={formData.username}
+              onChange={handleInputChange}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email">
+              Email <span className="mandatory">*</span>:
+            </label>
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">
+              Password <span className="mandatory">*</span>:
+            </label>
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
               required
             />
           </div>
-          <button type="submit" className="login-button">Register</button>
+
+          <button
+            type="button"
+            className="toggle-optional"
+            onClick={() => setShowOptionalFields(!showOptionalFields)}
+          >
+            {showOptionalFields ? 'Hide Optional Fields' : 'Show Optional Fields'}
+          </button>
+
+          {showOptionalFields && (
+            <div className="optional-fields">
+              {/* Optional Fields */}
+              <div className="form-group">
+                <label htmlFor="firstName">First Name:</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="lastName">Last Name:</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="country">Country:</label>
+                <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="phoneNumber">Phone Number:</label>
+                <input
+                  type="text"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="location">Location:</label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Birthday:</label>
+                <input
+                  type="text"
+                  placeholder="Day"
+                  name="birthdayDay"
+                  value={formData.birthdayDay}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  placeholder="Month"
+                  name="birthdayMonth"
+                  value={formData.birthdayMonth}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="checkbox-container">
+            <input
+              type="checkbox"
+              id="agreeCheckbox"
+              checked={isChecked}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor="agreeCheckbox">
+              I agree to the
+              <Link to="/privacy"> Privacy Policy</Link>,
+              <Link to="/termsofservice"> Terms of Service</Link>, and
+              <Link to="/webdisclaimer"> Website Disclaimer</Link>.
+            </label>
+          </div>
+
+          <button type="submit" className="login-button" disabled={!isChecked}>
+            Register
+          </button>
         </form>
 
-        <div className="separator">Or register with <strong>Google</strong></div>
+        <div className="legend">
+          <span className="mandatory">*</span> Mandatory fields
+        </div>
+
+        <div className="separator">
+          Or register with <strong>Google</strong>
+        </div>
         <GoogleLogin
-          clientId="YOUR_GOOGLE_CLIENT_ID"
-          buttonText="Register with Google"
           onSuccess={handleGoogleLogin}
-          onFailure={handleGoogleLogin}
-          cookiePolicy={'single_host_origin'}
+          onError={() => {
+            console.log('Login Failed');
+          }}
         />
 
         <div className="terms">

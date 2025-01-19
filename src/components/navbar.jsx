@@ -32,8 +32,11 @@ function Navbar() {
                         <li className={`navbar-item ${location.pathname === '/todos' ? 'active' : ''}`}>
                             <Link to="/todos">Todos</Link>
                         </li>
-                        <li className={`navbar-item ${location.pathname === '/todo-histroy' ? 'active' : ''}`}>
-                            <Link to="/todo-history">Todos history</Link>
+                        <li className={`navbar-item ${location.pathname === '/todosHistory' ? 'active' : ''}`}>
+                            <Link to="/todosHistory">Todos history</Link>
+                        </li>
+                        <li className={`navbar-item ${location.pathname === '/groups' ? 'active' : ''}`}>
+                            <Link to="/groups">Groups</Link>
                         </li>
                         <li className={`navbar-item ${location.pathname === '/profile' ? 'active' : ''}`}>
                             <Link to="/profile">Profile</Link>
