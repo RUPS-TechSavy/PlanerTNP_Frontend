@@ -279,11 +279,20 @@ function TodoList() {
   };
 
   const handleEditInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setEditTask((prevTask) => ({
-      ...prevTask,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    const { name, value, type, checked, multiple } = e.target;
+
+    if (multiple) {
+      const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+      setEditTask((prevTask) => ({
+        ...prevTask,
+        [name]: selectedOptions,
+      }));
+    } else {
+      setEditTask((prevTask) => ({
+        ...prevTask,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    }
   };
 
   const handleEditSubmit = (e) => {
@@ -526,7 +535,7 @@ function TodoList() {
                   name="groups"
                   multiple
                   value={editTask.groups}
-                  onChange={handleInputChange}
+                  onChange={handleEditInputChange}
                   style={{
                     display: 'block',
                     margin: 'auto',
@@ -553,7 +562,7 @@ function TodoList() {
                     type="checkbox"
                     name="urgent"
                     checked={editTask.urgent}
-                    onChange={handleInputChange}
+                    onChange={handleEditInputChange}
                   />
                   Mark as urgent
                 </label>
@@ -566,7 +575,7 @@ function TodoList() {
                     type="checkbox"
                     name="public"
                     checked={editTask.public}
-                    onChange={handleInputChange}
+                    onChange={handleEditInputChange}
                   />
                   Make this task public
                 </label>

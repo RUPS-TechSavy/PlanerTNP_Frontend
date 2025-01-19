@@ -53,36 +53,38 @@ function TodoHistory() {
         }));
     };
 
+
+
     const handleEditSubmit = (e) => {
         e.preventDefault();
-        if (editTask.startDateTime.trim() === '' || editTask.endDateTime.trim() === '') return;
-
+        if (editTask.name.trim() === '') return;
+    
         const startDateTime = new Date(editTask.startDateTime);
         const endDateTime = new Date(editTask.endDateTime);
-
+    
         if (endDateTime < startDateTime) {
-            alert('End date and time cannot be before start date and time.');
-            return;
+          alert('End date and time cannot be before start date and time.');
+          return;
         }
-
+    
         const user = JSON.parse(Cookie.get("signed_in_user"));
-        axios.put(`${env.api}/task/user/${user._id}/tasks/${editTask._id}`, editTask, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
+        //update task
+        axios.put(`${env.api}/task/tasks/${editTask._id}`, editTask)
+          .then((response) => {
             setCompletedTasks((prevTasks) => prevTasks.map((task) =>
-                task._id === editTask._id ? { ...editTask } : task
+              task._id === editTask._id ? { ...editTask } : task
             ));
-
-            // Close modals
+    
+            // Close edit modal
             setShowEditModal(false);
+    
+            // Close description modal if open
             setShowDescriptionModal(false);
             setSelectedTask(null);
-        }).catch((error) => {
+          }).catch((error) => {
             console.log(error);
-        });
-    };
+          });
+      };
 
     // Render list of completed tasks
     const renderCompletedTasks = () => {
