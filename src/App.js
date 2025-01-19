@@ -6,6 +6,7 @@ import Login from "./components/profile/login";
 import Profile from "./components/profile/profile";
 import Register from "./components/profile/register";
 import TodoList from './components/todos/TodoList';
+import TodosHistory from './components/todosHistory/todosHistory';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/todos" element={<TodoList />} />
+        <Route path="/todosHistory" element={<TodosHistory />} />
       </Routes>
     </BrowserRouter>
   );

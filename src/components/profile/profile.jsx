@@ -93,19 +93,21 @@ function Profile() {
     });
   };
 
-  const handleDeleteAccount = () => {
-    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      const user = JSON.parse(Cookie.get('signed_in_user'));
-      axios.delete(`${env.api}/auth/user/${user._id}`).then(() => {
-        Cookie.remove("signed_in_user");
-        alert('Account deleted.');
-        navigate("/");
-        window.Location.reload();
-      }).catch((error) => {
-        console.log('Error:', error);
-      });
-    }
-  };
+    const handleDeleteAccount = () => {
+        if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+            const user = JSON.parse(Cookie.get('signed_in_user'));
+            axios.delete(`${env.api}/auth/user/${user._id}`)
+                .then(() => {
+                    Cookie.remove("signed_in_user");
+                    alert('Account deleted.');
+                    window.location.replace(`http://${window.location.host}/`);
+                })
+                .catch((error) => {
+                    console.log('Error:', error);
+                });
+        }
+    };
+
 
   return (
     <div className="page-background">
