@@ -10,14 +10,16 @@ function TodoList() {
     const [showDescriptionModal, setShowDescriptionModal] = useState(false);
     const [selectedTask, setSelectedTask] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [groups, setGroups] = useState([]);
     const [showEditModal, setShowEditModal] = useState(false);  // Modal for editing task
     const [newTask, setNewTask] = useState({
-        name: '',
-        urgent: false,
-        color: '#3498db', // Default color
-        startDateTime: '',
-        endDateTime: '',
-        description: '',
+      name: '',
+      urgent: false,
+      public: false,
+      color: '#3498db',
+      startDateTime: '',
+      endDateTime: '',
+      groups: [],
     });
 
     const [editTask, setEditTask] = useState({
@@ -46,16 +48,40 @@ function TodoList() {
       gray: '#7f8c8d',   // darkgray
     };
 
-    useEffect(() => {
-        const user = JSON.parse(Cookie.get("signed_in_user"));
-        console.log("Parsed Cookie Data:", user);
-    axios.get(`${env.api}/task/user/${user._id}/tasks`).then((response) => {
-            setTasks(response.data.tasks);
-          setLegend(user.legend || {}); // Default to an empty object if no legend exists
+  useEffect(() => {
+    const user = JSON.parse(Cookie.get("signed_in_user"));
+    console.log("Parsed Cookie Data:", user);
+    axios.get(`${env.api}/task/user/${user._id}/${user.Email}/tasks`).then((response) => {
+      setTasks(response.data.tasks);
+      setLegend(user.legend || {}); // Default to an empty object if no legend exists
     }).catch((error) => {
-            console.log(error);
-        });
-    }, [showModal,showColorModal]);
+      console.log(error);
+    });
+  }, [showModal, showColorModal]);
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const user = JSON.parse(Cookie.get('signed_in_user'));
+        const response = await axios.get(`${env.api}/group/${user.Email}/member-groups`);
+        console.log("Groups Response:", response.data);
+
+        const mappedGroups = response.data.map((group) => ({
+          id: group._id || "", // Map "_id" to "id"
+          name: group.name || "", // Map "name" to "name"
+          members: group.members || [], // Map "members" to "members"
+          roles: group.roles || {}, // Map "roles" to "roles"
+          customRoles: group.customRoles || [], // Map "customRoles" to "customRoles"
+        }));
+
+        setGroups(mappedGroups);
+      } catch (error) {
+        console.error('Error fetching groups:', error);
+      }
+    };
+
+    fetchGroups();
+  }, []);
 
     const handleDeleteTask = async (id) => {
         const user = JSON.parse(Cookie.get("signed_in_user"));
@@ -102,13 +128,24 @@ function TodoList() {
         });
     };
 
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setNewTask((prevTask) => ({
-            ...prevTask,
-            [name]: type === 'checkbox' ? checked : value,
-        }));
-    };
+  // Handle input changes in the modal
+  const handleInputChange = (e) => {
+    const { name, value, type, checked, multiple } = e.target;
+
+    if (multiple) {
+      const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+      setNewTask((prevTask) => ({
+        ...prevTask,
+        [name]: selectedOptions,
+      }));
+    } else {
+      setNewTask((prevTask) => ({
+        ...prevTask,
+        [name]: type === 'checkbox' ? checked : value,
+      }));
+    }
+  };
+
 
   const saveLegend = () => {
     const user = JSON.parse(Cookie.get("signed_in_user"));
@@ -116,24 +153,23 @@ function TodoList() {
     const updatedUser = { ...user, legend }; // Posodobi samo legend
     const updatedLegend = {
       legend: legend, // Predpostavlja se, da imaš spremenljivko "legend", ki vsebuje nove podatke
-  };
+    };
     axios.put(`${env.api}/auth/user/${user._id}/update-data`, updatedLegend)
-    .then((response) => {
-      alert("Legend updated successfully!");
-      setShowColorModal(false); // Close modal
-      Cookie.set("signed_in_user", JSON.stringify(updatedUser)); // Posodobi Cookie
-    })
-    .catch((error) => {
-      console.error("Error updating legend:", error);
-      alert("Failed to update legend.");
-    });
-    
+      .then((response) => {
+        setShowColorModal(false); // Close modal
+        Cookie.set("signed_in_user", JSON.stringify(updatedUser)); // Posodobi Cookie
+      })
+      .catch((error) => {
+        console.error("Error updating legend:", error);
+        alert("Failed to update legend.");
+      });
+
   };
-  
+
 
   // Handle submitting the new task
   const handleSubmit = (e) => {
-    
+
     e.preventDefault();
     if (newTask.name.trim() === '') return;
 
@@ -185,23 +221,25 @@ function TodoList() {
         <h1>My Todos</h1>
         <div className="todo-list">
           <div className="todo-header">
-            <button className="color-modal-button" onClick={() => setShowColorModal(true)} 
-            style={{ marginRight: '10px', backgroundColor: '#3498db',
-                  color: '#fff',
-                  border: 'none',
-                  height: '35px',
-                  borderRadius: '50%',
-                  padding: '0 15px',
-                  fontSize: '16px',
-                  textAlign:'center',
-                  lineHeight: '35px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s'}} onMouseOver={() => {
-                    document.querySelector('.color-modal-button').style.backgroundColor = '#2980b9';
-                  }} onMouseOut={() => {
-                    document.querySelector('.color-modal-button').style.backgroundColor = '#3498db';
-                  }}>
-              Colorr Legend
+            <button className="color-modal-button" onClick={() => setShowColorModal(true)}
+              style={{
+                marginRight: '10px', backgroundColor: '#3498db',
+                color: '#fff',
+                border: 'none',
+                height: '35px',
+                borderRadius: '50%',
+                padding: '0 15px',
+                fontSize: '16px',
+                textAlign: 'center',
+                lineHeight: '35px',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s'
+              }} onMouseOver={() => {
+                document.querySelector('.color-modal-button').style.backgroundColor = '#2980b9';
+              }} onMouseOut={() => {
+                document.querySelector('.color-modal-button').style.backgroundColor = '#3498db';
+              }}>
+              Color Legend
             </button>
             <button className="add-task-button" onClick={handleAddTask}>
               +
@@ -411,17 +449,59 @@ function TodoList() {
                                 />
                             </div>
 
-                            <div className="form-group checkbox-group">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="urgent"
-                                        checked={newTask.urgent}
-                                        onChange={handleInputChange}
-                                    />
-                                    Mark as urgent
-                                </label>
-                            </div>
+              {/* Select Groups */}
+              <div className="form-group">
+                <label htmlFor="groups">Select Groups:</label>
+                <select
+                  id="groups"
+                  name="groups"
+                  multiple
+                  value={newTask.groups}
+                  onChange={handleInputChange}
+                  style={{
+                    display: 'block',
+                    margin: 'auto',
+                    width: '80%',
+                    height: '120px',
+                    borderRadius: '10px',
+                    padding: '10px',
+                    border: '2px solid #ddd',
+                    backgroundColor: '#fff',
+                  }}
+                >
+                  {groups.map((group, index) => (
+                    <option key={index} value={group.id}>
+                      {group.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Urgent Checkbox */}
+              <div className="form-group checkbox-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="urgent"
+                    checked={newTask.urgent}
+                    onChange={handleInputChange}
+                  />
+                  Mark as urgent
+                </label>
+              </div>
+
+              {/* Public Checkbox */}
+              <div className="form-group checkbox-group">
+                <label>
+                  <input
+                    type="checkbox"
+                    name="public"
+                    checked={newTask.public}
+                    onChange={handleInputChange}
+                  />
+                  Make this task public
+                </label>
+              </div>
 
               {/* Buttons */}
               <div className="modal-buttons">
@@ -441,38 +521,38 @@ function TodoList() {
         </div>
       )}
       {showColorModal && (
-      <div className="modal-overlay" onClick={() => setShowColorModal(false)}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <h2>Edit Legend</h2>
-          <div className="color-options-modal">
-            {Object.entries(legend).map(([color, value], index) => (
-              <div key={index} className="color-option">
-                <div
-                  className="color-circle"
-                  style={{ backgroundColor: colorMap[color]}} // Uporabi preslikavo
-                ></div>
-                <input
-                  type="text"
-                  value={value}
-                  onChange={(e) => 
-                    setLegend((prev) => ({ ...prev, [color]: e.target.value }))
-                  }
-                  placeholder={`Enter legend for ${color}`}
-                />
-              </div>
-            ))}
-          </div>
-          <div className="modal-buttons">
-            <button
-              className="save-legend-button"
-              onClick={() => saveLegend()}
-            >
-              Save Legend
-            </button>
+        <div className="modal-overlay" onClick={() => setShowColorModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Edit Legend</h2>
+            <div className="color-options-modal">
+              {Object.entries(legend).map(([color, value], index) => (
+                <div key={index} className="color-option">
+                  <div
+                    className="color-circle"
+                    style={{ backgroundColor: colorMap[color] }} // Uporabi preslikavo
+                  ></div>
+                  <input
+                    type="text"
+                    value={value}
+                    onChange={(e) =>
+                      setLegend((prev) => ({ ...prev, [color]: e.target.value }))
+                    }
+                    placeholder={`Enter legend for ${color}`}
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="modal-buttons">
+              <button
+                className="save-legend-button"
+                onClick={() => saveLegend()}
+              >
+                Save Legend
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
 
     </div>
   );

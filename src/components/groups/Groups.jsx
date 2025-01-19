@@ -11,6 +11,7 @@ import GroupDetails from './GroupDetails';
 function Groups() {
     const [groups, setGroups] = useState([]);
     const [selectedGroup, setSelectedGroup] = useState(null);
+    const user = JSON.parse(Cookie.get('signed_in_user'));
 
     useEffect(() => {
         const fetchGroups = async () => {
@@ -56,6 +57,7 @@ function Groups() {
                         {selectedGroup ? (
                             <GroupDetails
                                 group={selectedGroup}
+                                currentUserEmail={user.Email}
                                 onClose={() => setSelectedGroup(null)}
                             />
                         ) : (

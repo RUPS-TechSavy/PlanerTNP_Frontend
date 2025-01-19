@@ -52,7 +52,9 @@
     color: #2980b9;
 }
 
-.filters {
+
+/* Color Filters */
+.color-filters {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -63,43 +65,78 @@
     border-radius: 20px;
 }
 
-.filters div {
+.color-filters div {
     display: flex;
     align-items: center;
-}
-
-.filter-label {
-    margin-right: 10px;
-    font-weight: bold;
-    color: #2c3e50;
-}
-
-.filter,
-.active-filter {
+    justify-content: center;
+    padding: 5px 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    border-radius: 50%; /* Circular shape for color filters */
     width: 30px;
     height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
 }
 
-.active-filter {
+.color-filters .active-filter {
     border-color: #2c3e50;
 }
 
-.filter:hover,
-.active-filter:hover {
+.color-filters div:hover {
     opacity: 0.7;
 }
 
-.clear-filter {
+.color-filters .clear-filter {
     margin-left: 10px;
     cursor: pointer;
     color: #e74c3c;
     font-weight: bold;
 }
 
-.clear-filter:hover {
+.color-filters .clear-filter:hover {
+    text-decoration: underline;
+}
+
+/* Group Filters */
+.group-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    margin-bottom: 20px;
+    background-color: rgba(245, 245, 245, 0.9);
+    border-radius: 20px;
+}
+
+.group-filters div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 10px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    border-radius: 5px; /* Rectangular shape for group filters */
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.group-filters .active-filter {
+    border-color: #2c3e50;
+}
+
+.group-filters div:hover {
+    opacity: 0.7;
+}
+
+.group-filters .clear-filter {
+    margin-left: 10px;
+    cursor: pointer;
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.group-filters .clear-filter:hover {
     text-decoration: underline;
 }
 

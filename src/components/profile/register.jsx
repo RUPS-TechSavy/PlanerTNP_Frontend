@@ -6,6 +6,7 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
 import env from '../../env.json';
 import './login.css';
+import { Link } from 'react-router-dom';
 
 function decodeJWT(token) {
   const base64Url = token.split('.')[1];
@@ -21,68 +22,60 @@ function decodeJWT(token) {
 }
 
 function Register() {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [country, setCountry] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [location, setLocation] = useState('');
-  const [birthdayDay, setBirthdayDay] = useState('');
-  const [birthdayMonth, setBirthdayMonth] = useState('');
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    country: '',
+    phoneNumber: '',
+    location: '',
+    birthdayDay: '',
+    birthdayMonth: '',
+  });
+  const [isChecked, setIsChecked] = useState(false);
+  const [showOptionalFields, setShowOptionalFields] = useState(false);
 
   const navigate = useNavigate();
-  const [isChecked, setIsChecked] = useState(false);
-  const [canRegister, setCanRegister] = useState(false);
 
-  useEffect(() => {
-    document.body.classList.add('no-scroll');
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-    return () => {
-      document.body.classList.remove('no-scroll');
-    };
-  }, []);
-
-  const handleCheckboxChange = (event) => {
-    setIsChecked(event.target.checked);
-    setCanRegister(event.target.checked); // Allow registration only if checked
+  const handleCheckboxChange = () => {
+    setIsChecked(!isChecked);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isChecked) {
-    const hashedPassword = sha256(password).toString();
+    if (!isChecked) return;
+
+    const hashedPassword = sha256(formData.password).toString();
     const data = {
-      Username: username,
-      Email: email,
+      Username: formData.username,
+      Email: formData.email,
       Password: hashedPassword,
-      FirstName: firstName || undefined,
-      LastName: lastName || undefined,
-      Country: country || undefined,
-      PhoneNumber: phoneNumber || undefined,
-      Location: location || undefined,
+      FirstName: formData.firstName || undefined,
+      LastName: formData.lastName || undefined,
+      Country: formData.country || undefined,
+      PhoneNumber: formData.phoneNumber || undefined,
+      Location: formData.location || undefined,
       Birthday: {
-        Day: birthdayDay || undefined,
-        Month: birthdayMonth || undefined,
+        Day: formData.birthdayDay || undefined,
+        Month: formData.birthdayMonth || undefined,
       },
     };
 
-    axios
-      .post(`${env.api}/auth/register`, data, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-      .then((response) => {
-        Cookie.set('signed_in_user', JSON.stringify(response.data));
-        navigate('/');
-        window.location.reload();
-      })
-      .catch((error) => {
-        console.log('Error:', error);
-        alert('Username exists.');
-      });
+    try {
+      const response = await axios.post(`${env.api}/auth/register`, data);
+      Cookie.set('signed_in_user', JSON.stringify(response.data));
+      navigate('/');
+      window.location.reload();
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Username exists or registration failed.');
+    }
   };
 
   const handleGoogleLogin = (credentialResponse) => {
@@ -93,7 +86,7 @@ function Register() {
       const googleData = {
         Username: decoded.name,
         Email: decoded.email,
-        Password: token, 
+        Password: token,
       };
 
       axios
@@ -118,102 +111,151 @@ function Register() {
     <div className="login-background">
       <div className="login-container">
         <h1>Register</h1>
-        <form className="login-form" onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
-            <label htmlFor="username">Username:</label>
+            <label htmlFor="username">
+              Username <span className="mandatory">*</span>:
+            </label>
             <input
               type="text"
               id="username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              name="username"
+              value={formData.username}
+              onChange={handleInputChange}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="email">Email:</label>
+            <label htmlFor="email">
+              Email <span className="mandatory">*</span>:
+            </label>
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="password">Password:</label>
+            <label htmlFor="password">
+              Password <span className="mandatory">*</span>:
+            </label>
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
               required
             />
           </div>
 
-          {/* Optional Fields */}
-          <div className="form-group">
-            <label htmlFor="firstName">First Name:</label>
+          <button
+            type="button"
+            className="toggle-optional"
+            onClick={() => setShowOptionalFields(!showOptionalFields)}
+          >
+            {showOptionalFields ? 'Hide Optional Fields' : 'Show Optional Fields'}
+          </button>
+
+          {showOptionalFields && (
+            <div className="optional-fields">
+              {/* Optional Fields */}
+              <div className="form-group">
+                <label htmlFor="firstName">First Name:</label>
+                <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="lastName">Last Name:</label>
+                <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="country">Country:</label>
+                <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="phoneNumber">Phone Number:</label>
+                <input
+                  type="text"
+                  id="phoneNumber"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="location">Location:</label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="form-group">
+                <label>Birthday:</label>
+                <input
+                  type="text"
+                  placeholder="Day"
+                  name="birthdayDay"
+                  value={formData.birthdayDay}
+                  onChange={handleInputChange}
+                />
+                <input
+                  type="text"
+                  placeholder="Month"
+                  name="birthdayMonth"
+                  value={formData.birthdayMonth}
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="checkbox-container">
             <input
-              type="text"
-              id="firstName"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
+              type="checkbox"
+              id="agreeCheckbox"
+              checked={isChecked}
+              onChange={handleCheckboxChange}
             />
-          </div>
-          <div className="form-group">
-            <label htmlFor="lastName">Last Name:</label>
-            <input
-              type="text"
-              id="lastName"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="country">Country:</label>
-            <input
-              type="text"
-              id="country"
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="phoneNumber">Phone Number:</label>
-            <input
-              type="text"
-              id="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="location">Location:</label>
-            <input
-              type="text"
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-            />
-          </div>
-          <div className="form-group birthday-group">
-            <label>Birthday:</label>
-            <input
-              type="text"
-              placeholder="Day"
-              value={birthdayDay}
-              onChange={(e) => setBirthdayDay(e.target.value)}
-            />
-            <input
-              type="text"
-              placeholder="Month"
-              value={birthdayMonth}
-              onChange={(e) => setBirthdayMonth(e.target.value)}
-            />
+            <label htmlFor="agreeCheckbox">
+              I agree to the
+              <Link to="/privacy"> Privacy Policy</Link>,
+              <Link to="/termsofservice"> Terms of Service</Link>, and
+              <Link to="/webdisclaimer"> Website Disclaimer</Link>.
+            </label>
           </div>
 
-          <button type="submit" className="login-button">Register</button>
+          <button type="submit" className="login-button" disabled={!isChecked}>
+            Register
+          </button>
         </form>
+
+        <div className="legend">
+          <span className="mandatory">*</span> Mandatory fields
+        </div>
 
         <div className="separator">
           Or register with <strong>Google</strong>

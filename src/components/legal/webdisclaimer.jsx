@@ -1,7 +1,10 @@
-import React from 'react';
 import './privacyPolicy.css'; // Use the same CSS file as Privacy Policy
+import React, { useEffect} from 'react';
 
 const WebsiteDisclaimer = () => {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   return (
     <div className="privacy-background">
   <div className="privacy-container">

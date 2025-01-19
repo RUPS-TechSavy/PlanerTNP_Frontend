@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import env from "../../env.json";
 
-function GroupDetails({ group, onClose }) {
+function GroupDetails({ group, currentUserEmail, onClose }) {
   const [members, setMembers] = useState([]);
   const [roles, setRoles] = useState({});
   const [newMemberEmail, setNewMemberEmail] = useState('');
@@ -20,7 +20,16 @@ function GroupDetails({ group, onClose }) {
     }
   }, [group]);
 
+  // Utility function to check if the current user can manage the group
+  const canManageGroup = () => {
+    const userRole = roles[currentUserEmail];
+    console.log("User Role:", userRole);
+    console.log("Email:", currentUserEmail);
+    return ['Owner', 'Admin', 'Leader'].includes(userRole);
+  };
+
   const handleAddMember = async () => {
+    if (!canManageGroup()) return alert('You do not have permission to add members.');
     if (!newMemberEmail || !newMemberRole) return alert('Member email and role are required.');
 
     const memberExists = members.some(member => member.email === newMemberEmail);
@@ -46,6 +55,8 @@ function GroupDetails({ group, onClose }) {
   };
 
   const handleRemoveMember = async (email) => {
+    if (!canManageGroup()) return alert('You do not have permission to remove members.');
+
     const updatedMembers = members.filter(member => member.email !== email);
     const updatedRoles = { ...roles };
     delete updatedRoles[email];
@@ -65,6 +76,8 @@ function GroupDetails({ group, onClose }) {
   };
 
   const handleRoleChange = async (email, newRole) => {
+    if (!canManageGroup()) return alert('You do not have permission to change roles.');
+
     try {
       setRoles((prev) => ({ ...prev, [email]: newRole }));
 
@@ -82,6 +95,7 @@ function GroupDetails({ group, onClose }) {
   };
 
   const handleAddCustomRole = async () => {
+    if (!canManageGroup()) return alert('You do not have permission to add custom roles.');
     if (newCustomRole && !customRoles.includes(newCustomRole)) {
       setCustomRoles((prev) => [...prev, newCustomRole]);
       await axios.put(`${env.api}/group/${group.id}`, {
@@ -101,61 +115,69 @@ function GroupDetails({ group, onClose }) {
         {members.map(({ username, email }) => (
           <li key={email} className="member-item">
             {username} ({email})
-            <button onClick={() => handleRemoveMember(email)} className="remove-member-button">Remove</button>
-            <select
-              value={roles[email]}
-              onChange={(e) => handleRoleChange(email, e.target.value)}
-              className="role-dropdown"
-            >
-              {rolesList.map((role) => (
-                <option key={role} value={role}>
-                  {role}
-                </option>
-              ))}
-            </select>
+            {canManageGroup() && (
+              <>
+                <button onClick={() => handleRemoveMember(email)} className="remove-member-button">Remove</button>
+                <select
+                  value={roles[email]}
+                  onChange={(e) => handleRoleChange(email, e.target.value)}
+                  className="role-dropdown"
+                >
+                  {rolesList.map((role) => (
+                    <option key={role} value={role}>
+                      {role}
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
           </li>
         ))}
       </ul>
 
-      <div className="add-member-section">
-        <h3>Add Member</h3>
-        <input
-          type="email"
-          value={newMemberEmail}
-          onChange={(e) => setNewMemberEmail(e.target.value)}
-          placeholder="Enter member email"
-          className="email-input"
-        />
-        <select
-          value={newMemberRole}
-          onChange={(e) => setNewMemberRole(e.target.value)}
-          className="role-dropdown"
-        >
-          <option value="">Select Role</option>
-          {rolesList.map((role) => (
-            <option key={role} value={role}>
-              {role}
-            </option>
-          ))}
-        </select>
-        <button onClick={handleAddMember} className="add-button">
-          Add Member
-        </button>
-      </div>
+      {canManageGroup() && (
+        <div className="add-member-section">
+          <h3>Add Member</h3>
+          <input
+            type="email"
+            value={newMemberEmail}
+            onChange={(e) => setNewMemberEmail(e.target.value)}
+            placeholder="Enter member email"
+            className="email-input"
+          />
+          <select
+            value={newMemberRole}
+            onChange={(e) => setNewMemberRole(e.target.value)}
+            className="role-dropdown"
+          >
+            <option value="">Select Role</option>
+            {rolesList.map((role) => (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleAddMember} className="add-button">
+            Add Member
+          </button>
+        </div>
+      )}
 
-      <div className="custom-role-section">
-        <h3>Add Custom Role</h3>
-        <input
-          type="text"
-          value={newCustomRole}
-          onChange={handleCustomRoleChange}
-          placeholder="Enter custom role"
-          className="role-input"
-        />
-        <button onClick={handleAddCustomRole} className="add-custom-role-button">
-          Add Custom Role
-        </button>
-      </div>
+      {canManageGroup() && (
+        <div className="custom-role-section">
+          <h3>Add Custom Role</h3>
+          <input
+            type="text"
+            value={newCustomRole}
+            onChange={handleCustomRoleChange}
+            placeholder="Enter custom role"
+            className="role-input"
+          />
+          <button onClick={handleAddCustomRole} className="add-custom-role-button">
+            Add Custom Role
+          </button>
+        </div>
+      )}
     </div>
   );
 }

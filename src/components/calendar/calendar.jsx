@@ -41,7 +41,7 @@ const colorMap = {
     black: '#34495e',  // navy
     silver: '#95a5a6', // gray
     gray: '#7f8c8d',   // darkgray
-  };
+};
 
 const tmpdata = [
     { "task_name": "overflow: hidden;", "description": "neke neke", "color": '#e74c3c', "start_time": "2024-10-22T14:00:00", "end_time": "2024-10-22T16:00:00" },
@@ -57,6 +57,8 @@ function Calendar() {
     const [selectedFilter, setSelectedFilter] = useState(null);
     const [tasks, setTasks] = useState([]);
     const [schedules, setSchedules] = useState([]);
+    const [groups, setGroups] = useState([]);
+    const [selectedGroup, setSelectedGroup] = useState(null); // Add state for selected group
     const fileInputRef = useRef(null);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [legend, setLegend] = useState({});
@@ -66,41 +68,61 @@ function Calendar() {
             const user = JSON.parse(Cookie.get("signed_in_user"));
             setSignedIn(user);
             setLegend(user.legend);
-            
+
+            axios.get(`${env.api}/group/${user.Email}/member-groups`)
+                .then(response => {
+                    const mappedGroups = response.data.map(group => ({
+                        id: group._id || "",
+                        name: group.name || "",
+                    }));
+                    setGroups(mappedGroups);
+                })
+                .catch(error => console.error("Error fetching groups:", error));
+
 
             // Fetch tasks and schedules in parallel
             Promise.all([
-                axios.get(`${env.api}/task/user/${user._id}/tasks`),
+                axios.get(`${env.api}/task/user/${user._id}/${user.Email}/tasks`),
                 axios.get(`${env.api}/schedule/schedules/all`)
             ])
-            .then(([taskResponse, scheduleResponse]) => {
-                const userTasks = taskResponse.data.tasks;
-                const schedules = scheduleResponse.data.tasks;  // Assuming schedules are in 'tasks'
-    
-                // Map over schedules to match task properties
-                const formattedSchedules = schedules.map(schedule => ({
-                    _id: user._id,
-                    name: schedule.name,
-                    color: schedule.color,
-                    startDateTime: schedule.start_time,  // Rename to match tasks' format
-                    endDateTime: schedule.end_time       // Rename to match tasks' format
-                }));
-    
-                // Combine user tasks and formatted schedules into a single array
-                const combinedTasks = [...userTasks, ...formattedSchedules];
-                setTasks(combinedTasks);
-    
-                // Log the combined tasks array
-                console.log("Fetched and combined tasks:", combinedTasks);
-            })
-            .catch((error) => {
-                console.error("Error fetching tasks or schedules:", error);
-            });
+                .then(([taskResponse, scheduleResponse]) => {
+                    const userTasks = taskResponse.data.tasks;
+                    const schedules = scheduleResponse.data.tasks;  // Assuming schedules are in 'tasks'
+
+                    // Map over schedules to match task properties
+                    const formattedSchedules = schedules.map(schedule => ({
+                        _id: user._id,
+                        name: schedule.name,
+                        color: schedule.color,
+                        startDateTime: schedule.start_time,  // Rename to match tasks' format
+                        endDateTime: schedule.end_time       // Rename to match tasks' format
+                    }));
+
+                    // Combine user tasks and formatted schedules into a single array
+                    const combinedTasks = [...userTasks, ...formattedSchedules];
+                    setTasks(combinedTasks);
+
+                    // Log the combined tasks array
+                    console.log("Fetched and combined tasks:", combinedTasks);
+                })
+                .catch((error) => {
+                    console.error("Error fetching tasks or schedules:", error);
+                });
         } else {
             setSignedIn(false);
+
+            axios.get(`${env.api}/task/public`)
+                .then((response) => {
+                    setTasks(response.data.tasks || []);
+                    console.log("Fetched public tasks:", response.data.tasks);
+                })
+                .catch((error) => {
+                    console.error("Error fetching public tasks:", error);
+                });
+
         }
     }, []);
-    
+
 
     const handlePrevWeek = () => {
         setCurrentWeek(addDays(currentWeek, -7));
@@ -131,13 +153,13 @@ function Calendar() {
     const filteredTasks = tasks.filter(task => {
         const startDate = new Date(task.startDateTime);
         const endDate = new Date(task.endDateTime);
-    
+
         return weekDays.some(day => (
             (startDate <= day && endDate >= day) // Checks if the task spans across the week
         ));
     });
-    
-    
+
+
 
 const renderTaskInTimeSlot = (day, slot) => {
     const dayTasks = tasks.filter(task => {
@@ -212,34 +234,24 @@ const renderTaskInTimeSlot = (day, slot) => {
             {signedIn !== false && (
                 <div className="dropdown-container">
                     {!isDropdownOpen ? (
-                        <button
-                            className="dropdown-toggle"
-                            onClick={handleToggleDropdown}
-                        >
+                        <button className="dropdown-toggle" onClick={handleToggleDropdown}>
                             Open Legend
                         </button>
                     ) : (
                         <div className="dropdown-menu">
-                            <button
-                                className="close-dropdown"
-                                onClick={handleToggleDropdown}
-                            >
+                            <button className="close-dropdown" onClick={handleToggleDropdown}>
                                 Close Legend
                             </button>
-                            
                             <p>Legend Content</p>
-                            {/* Dropdown content */}
                             <div className="color-options-modal">
                                 {Object.entries(legend).map(([color, value], index) => (
-                                <div key={index} className="color-option" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                                <div
-                                    className="color-circle"
-                                    style={{ backgroundColor: colorMap[color] || color, width: '20px', height: '20px', borderRadius: '50%' }}
-                                ></div>
-                                <label className="legend-label">
-                                    {value || `Legend for ${color}`}
-                                </label>
-                            </div>
+                                    <div key={index} className="color-option" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                                        <div
+                                            className="color-circle"
+                                            style={{ backgroundColor: colorMap[color] || color, width: '20px', height: '20px', borderRadius: '50%' }}
+                                        ></div>
+                                        <label className="legend-label">{value || `Legend for ${color}`}</label>
+                                    </div>
                                 ))}
                             </div>
                         </div>
@@ -362,8 +374,73 @@ const renderTaskInTimeSlot = (day, slot) => {
                 
 
             )}
+
+            {/* Color Filters */}
+            <div className="color-filters">
+                <div>Color:</div>
+                {filters.map((filter, index) => (
+                    <div
+                        key={index}
+                        onClick={() => setSelectedFilter(index)}
+                        className={`${selectedFilter === index ? 'active-filter' : ''}`}
+                        style={{ backgroundColor: filter }}
+                    ></div>
+                ))}
+                <div className="clear-filter" onClick={() => setSelectedFilter(null)}>Clear</div>
+            </div>
+
+            {/* Group Filters */}
+            <div className="group-filters">
+                <div>Groups:</div>
+                {groups.map((group, index) => (
+                    <div
+                        key={index}
+                        onClick={() => setSelectedGroup(index)}
+                        className={`${selectedGroup === index ? 'active-filter' : ''}`}
+                    >
+                        {group.name}
+                    </div>
+                ))}
+                <div className="clear-filter" onClick={() => setSelectedGroup(null)}>Clear</div>
+            </div>
+
+            {/* Calendar Grid */}
+            <div className="calendar-grid-wrapper">
+                <div className="time-label-column">
+                    {timeSlots.map((slot, slotIndex) => (
+                        <div key={slotIndex} className="time-label">{slot}</div>
+                    ))}
+                </div>
+                <div className="calendar-grid">
+                    {weekDays.map((day, index) => (
+                        <div key={index}>
+                            <h3>{day.toDateString()}</h3>
+                            <div className="calendar-day">
+                                <div className="time-slots">
+                                    {timeSlots.map((slot, slotIndex) => (
+                                        <div key={slotIndex} className="time-slot">
+                                            <div className="content-area">
+                                                {renderTaskInTimeSlot(day, slot)}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Import Data */}
+            {signedIn !== false && (
+                <div className="import-data">
+                    <span>Import your own schedule: </span>
+                    <input type="file" accept=".json" ref={fileInputRef} onChange={handleFileImport} />
+                </div>
+            )}
         </div>
     );
+
 }
 
 export default Calendar;
