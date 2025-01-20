@@ -239,16 +239,19 @@ function Register() {
               id="agreeCheckbox"
               checked={isChecked}
               onChange={handleCheckboxChange}
+              required
             />
             <label htmlFor="agreeCheckbox">
-              I agree to the
-              <Link to="/privacy"> Privacy Policy</Link>,
-              <Link to="/termsofservice"> Terms of Service</Link>, and
-              <Link to="/webdisclaimer"> Website Disclaimer</Link>.
+              I agree to the <span className="mandatory">*</span>: 
             </label>
+            <div className="links-column">
+              <Link to="/privacy"> Privacy Policy</Link>
+              <Link to="/termsofservice"> Terms of Service</Link>
+              <Link to="/webdisclaimer"> Website Disclaimer</Link>
+            </div>
           </div>
 
-          <button type="submit" className="login-button" disabled={!isChecked}>
+          <button type="submit" className="login-button" >
             Register
           </button>
         </form>
@@ -260,12 +263,14 @@ function Register() {
         <div className="separator">
           Or register with <strong>Google</strong>
         </div>
+        <div className="google-login-container">
         <GoogleLogin
           onSuccess={handleGoogleLogin}
           onError={() => {
             console.log('Login Failed');
           }}
         />
+        </div>
 
         <div className="terms">
           By clicking Register, you agree to our <strong>Terms of Service</strong> and <strong>Privacy Policy</strong>.

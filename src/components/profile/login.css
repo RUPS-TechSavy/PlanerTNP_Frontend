@@ -99,6 +99,7 @@ body, html {
 }
 
 .terms {
+    margin-top: 10px;
     font-size: 0.8em;
     color: #666;
 }
@@ -121,30 +122,40 @@ body, html {
 /* Checkbox container */
 .checkbox-container {
     display: flex;
+    flex-direction: row; /* Checkbox and text will be on the same row */
     align-items: center;
-    text-align: left; /* Align text properly */
+    gap: 10px; /* Adds space between checkbox and text */
+    font-size: 0.9em;
     margin-top: 10px;
-    font-size: 0.9em; /* Slightly smaller text */
-    gap: 8px; /* Space between checkbox and text */
 }
 
-.checkbox-container input {
-    margin: 0; /* Removes default margin */
-    cursor: pointer;
+.checkbox-container input[type="checkbox"] {
+    width: 20px; /* Set a fixed width */
+    height: 20px; /* Set a fixed height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove any padding */
+    cursor: pointer; /* Keep the pointer on hover */
 }
 
 .checkbox-container label {
-    display: flex;
-    align-items: center;
-    line-height: 1.2; /* Better spacing for multiline text */
     font-size: 0.9rem;
     color: #333;
+    margin-right: 10px; /* Space between 'I agree to the' and links column */
+}
+
+/* Add styles for the links column */
+.links-column {
+    display: flex;
+    flex-direction: column; /* Stack the links in a column */
+    gap: 5px; /* Space between each link */
+    margin-top: 5px;
+    align-items: flex-start;
 }
 
 .checkbox-container a {
     color: #3498db;
-    text-decoration: none;
     font-weight: 500;
+    text-decoration: none;
 }
 
 .checkbox-container a:hover {
@@ -182,4 +193,10 @@ body, html {
   .optional-fields {
     margin-top: 10px;
   }
+
+  .google-login-container {
+    display: flex;
+    justify-content: center; /* Poravna gumb horizontalno na sredino */
+    width: 100%; /* Poskrbi, da bo gumb zasedel celotno širino */
+}
   

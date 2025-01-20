@@ -37,15 +37,22 @@ body, html {
 }
 
 .privacy-container h1 {
+    font-size: 3em;
     color: #2c3e50;
-    margin-bottom: 20px;
+    
 }
 
 .privacy-container p {
     color: #555;
     font-size: 2em;
     line-height: 1.8;
-    margin-bottom: 30px;
+    
+}
+.privacy-container h2 {
+    color: #555;
+    font-size: 2em;
+    line-height: 1.8;
+    
 }
 
 .privacy-container a {
@@ -55,4 +62,36 @@ body, html {
 
 .privacy-container a:hover {
     text-decoration: underline;
+}
+
+/* Style for the unordered list */
+ul {
+    list-style: none; /* Remove default bullets */
+    padding-left: 0; /* Remove default padding */
+}
+
+ul li {
+    position: relative;
+    padding-left: 20px; /* Space for custom bullet */
+    font-size: 1.2em;
+    line-height: 1.5;
+    color: #333; /* Make text more readable */
+    margin-bottom: 10px;
+}
+
+/* Custom bullet points (using icons or shapes) */
+ul li::before {
+    content: '\2022'; /* Unicode for bullet */
+    font-size: 2em;
+    color: #3498db; /* Change color of the bullet */
+    position: absolute;
+    left: 0;
+    top: 50%; /* Align vertically */
+    transform: translateY(-50%); /* Correct vertical alignment */
+}
+.spacing {
+    margin-bottom: 20px; /* Adjust the space between these two paragraphs */
+}
+.spacing2 {
+    margin-bottom: 30px; /* Adjust the space between these two paragraphs */
 }
