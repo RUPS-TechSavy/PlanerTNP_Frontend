@@ -278,6 +278,7 @@ function Calendar() {
                 </div>
 
                 {/* Group Filters */}
+                {signedIn !== false && (
                 <div className="group-filters">
                     <div>Groups:</div>
                     {groups.map((group, index) => (
@@ -291,7 +292,8 @@ function Calendar() {
                     ))}
                     <div className="clear-filter" onClick={() => setSelectedGroup(null)}>Clear</div>
                 </div>
-
+                )}
+                
                 {/* Calendar Grid */}
                 <div className="calendar-grid-wrapper">
                     <div className="time-label-column">

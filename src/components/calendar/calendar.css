@@ -306,6 +306,7 @@
     /* Moves it all the way to the left of the container */
     margin: 0;
     /* Removes any unwanted margins */
+    z-index: 999;
 }
 
 .dropdown-toggle {
@@ -316,6 +317,7 @@
     cursor: pointer;
     border-radius: 4px;
     transition: background-color 0.3s;
+    margin-left: 20px;
 }
 
 .dropdown-toggle:hover {
@@ -332,6 +334,7 @@
     /* Adjust this to control the vertical position of the dropdown menu */
     left: 0;
     /* Keeps the dropdown aligned to the left */
+    z-index: 999;
 }
 
 .close-dropdown {

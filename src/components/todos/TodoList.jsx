@@ -730,8 +730,8 @@ function TodoList() {
                     onChange={(e) =>
                       setLegend((prev) => ({ ...prev, [color]: e.target.value }))
                     }
-                    placeholder={`Enter custom name for ${color}`}
-                    style={{ flex: '1' }} // This will allow the input to take up remaining space.
+                    placeholder={`Enter legend for ${color}`}
+                    maxLength={36} // Limit the input to 36 characters
                   />
                 </div>
               ))}
