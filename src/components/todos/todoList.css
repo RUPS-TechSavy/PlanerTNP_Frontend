@@ -239,14 +239,17 @@ ul {
 
 /* Modal Content */
 .modal-content {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 15px;
-    width: 400px;
+    background-color: #fff; 
+    padding: 30px; 
+    border-radius: 15px; 
+    width: 400px; 
     position: relative;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    text-align: left;
-}
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+    text-align: left; 
+  
+    max-height: 80vh; 
+    overflow-y: auto; 
+  }
 
 /* Modal Header */
 .modal-content h2 {
