@@ -1,4 +1,4 @@
-import './privacyPolicy.css'; // Use the same CSS file as Privacy Policy
+import './privacyPolicy.css';
 import { Link } from "react-router-dom";
 import React, { useEffect} from 'react';
 

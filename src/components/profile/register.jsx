@@ -242,7 +242,7 @@ function Register() {
               required
             />
             <label htmlFor="agreeCheckbox">
-              I agree to the <span className="mandatory">*</span>: 
+              I agree to the <span className="mandatory">*</span>:
             </label>
             <div className="links-column">
               <Link to="/privacy"> Privacy Policy</Link>
@@ -264,12 +264,12 @@ function Register() {
           Or register with <strong>Google</strong>
         </div>
         <div className="google-login-container">
-        <GoogleLogin
-          onSuccess={handleGoogleLogin}
-          onError={() => {
-            console.log('Login Failed');
-          }}
-        />
+          <GoogleLogin
+            onSuccess={handleGoogleLogin}
+            onError={() => {
+              console.log('Login Failed');
+            }}
+          />
         </div>
 
         <div className="terms">

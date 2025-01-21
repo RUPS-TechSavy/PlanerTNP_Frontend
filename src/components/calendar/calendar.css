@@ -301,6 +301,7 @@
     position: absolute;
     /* Allows independent positioning */
     top: 200px;
+    min-width: 250px;
     /* Adjust this value to align vertically as needed */
     left: 20px;
     /* Moves it all the way to the left of the container */

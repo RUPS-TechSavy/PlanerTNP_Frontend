@@ -1,4 +1,4 @@
-import './privacyPolicy.css'; // Use the same CSS file as Privacy Policy
+import './privacyPolicy.css';
 import React, { useEffect} from 'react';
 
 const WebsiteDisclaimer = () => {

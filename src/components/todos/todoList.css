@@ -29,11 +29,11 @@ body {
     color: #333;
 }
 
-    .todo-container h1 {
-        text-align: center;
-        margin-bottom: 30px;
-        color: #2c3e50;
-    }
+.todo-container h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #2c3e50;
+}
 
 /* Task List Styles */
 .todo-list {
@@ -52,15 +52,17 @@ body {
     color: #333;
 }
 
-    .task-item:last-child {
-        border-bottom: none;
-    }
+.task-item:last-child {
+    border-bottom: none;
+}
 
 /* Flexbox Layout */
 .task-content {
-    display: flex; /* Flexbox for alignment */
+    display: flex;
+    /* Flexbox for alignment */
     align-items: center;
-    gap: 15px; /* Space between child elements */
+    gap: 15px;
+    /* Space between child elements */
 }
 
 /* Color Circle */
@@ -73,20 +75,23 @@ body {
 
 /* Task Name */
 .task-name {
-    flex-grow: 1; /* Fills available space */
-    margin-right: 10px; /* Additional spacing */
+    flex-grow: 1;
+    /* Fills available space */
+    margin-right: 10px;
+    /* Additional spacing */
 }
 
-    .task-name.urgent {
-        color: #e74c3c;
-        font-weight: bold;
-    }
+.task-name.urgent {
+    color: #e74c3c;
+    font-weight: bold;
+}
 
 /* Task Date */
 .task-date {
     font-size: 0.9em;
     color: #555;
-    white-space: nowrap; /* Prevent wrapping */
+    white-space: nowrap;
+    /* Prevent wrapping */
 }
 
 /* Button Styles */
@@ -98,12 +103,13 @@ body {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-left: auto; /* Push button to the right */
+    margin-left: auto;
+    /* Push button to the right */
 }
 
-    .description-button:hover {
-        background-color: #e67e22;
-    }
+.description-button:hover {
+    background-color: #e67e22;
+}
 
 /* Icons */
 .start-calendar-icon,
@@ -119,20 +125,23 @@ body {
 /* Todo header s flexboxom */
 .todo-header {
     display: flex;
-    justify-content: space-between; /* Razmakne gumbe na levo in desno stran */
-    align-items: center; /* Poravna gumbe po višini */
-    width: 100%; /* Da se poskrbi, da zavzame celotno širino */
-  }
-  
-  
-  /* Hover učinki za gumbe */
-  .color-modal-button:hover {
+    justify-content: space-between;
+    /* Razmakne gumbe na levo in desno stran */
+    align-items: center;
+    /* Poravna gumbe po višini */
+    width: 100%;
+    /* Da se poskrbi, da zavzame celotno širino */
+}
+
+
+/* Hover učinki za gumbe */
+.color-modal-button:hover {
     background-color: #3498db;
-  }
-  
-  
-  /* Stil za gumb "Add Task" (+) */
-  .add-task-button {
+}
+
+
+/* Stil za gumb "Add Task" (+) */
+.add-task-button {
     width: 35px;
     height: 35px;
     background-color: #3498db;
@@ -144,13 +153,13 @@ body {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-  }
-  
-  .add-task-button:hover {
+}
+
+.add-task-button:hover {
     background-color: #2980b9;
-  }
-  
-  
+}
+
+
 ul {
     list-style: none;
     margin-top: 20px;
@@ -164,9 +173,9 @@ ul {
     color: #333;
 }
 
-    .task-item:last-child {
-        border-bottom: none;
-    }
+.task-item:last-child {
+    border-bottom: none;
+}
 
 .task-content {
     display: flex;
@@ -184,16 +193,18 @@ ul {
     margin-right: auto;
 }
 
-    .task-name.urgent {
-        color: #e74c3c; /* Red color for urgent tasks */
-        font-weight: bold;
-    }
+.task-name.urgent {
+    color: #e74c3c;
+    /* Red color for urgent tasks */
+    font-weight: bold;
+}
 
 .task-date {
     font-size: 0.9em;
     color: #555;
     margin-left: 10px;
-    white-space: nowrap; /* Prevent the date from wrapping */
+    white-space: nowrap;
+    /* Prevent the date from wrapping */
 }
 
 .description-button {
@@ -204,12 +215,13 @@ ul {
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-left: 20px; /* Adjust as needed */
+    margin-left: 20px;
+    /* Adjust as needed */
 }
 
-    .description-button:hover {
-        background-color: #e67e22;
-    }
+.description-button:hover {
+    background-color: #e67e22;
+}
 
 /* Modal Overlay */
 .modal-overlay {
@@ -236,38 +248,38 @@ ul {
     text-align: left;
 }
 
-    /* Modal Header */
-    .modal-content h2 {
-        margin-bottom: 20px;
-        color: #2c3e50;
-        font-size: 1.5em;
-        text-align: center;
-    }
+/* Modal Header */
+.modal-content h2 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 1.5em;
+    text-align: center;
+}
 
-    /* Modal Paragraphs */
-    .modal-content p {
-        margin-bottom: 15px;
-        color: #333;
-        line-height: 1.5;
-    }
+/* Modal Paragraphs */
+.modal-content p {
+    margin-bottom: 15px;
+    color: #333;
+    line-height: 1.5;
+}
 
-        .modal-content p strong {
-            font-weight: bold;
-            color: #2c3e50;
-        }
+.modal-content p strong {
+    font-weight: bold;
+    color: #2c3e50;
+}
 
-    /* Buttons in Modal */
-    .modal-content button {
-        display: inline-block;
-        margin-top: 15px;
-        margin-right: 10px;
-        padding: 10px 20px;
-        font-size: 0.9em;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
+/* Buttons in Modal */
+.modal-content button {
+    display: inline-block;
+    margin-top: 15px;
+    margin-right: 10px;
+    padding: 10px 20px;
+    font-size: 0.9em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
 
 /* Specific Buttons */
 .edit-task-button {
@@ -275,32 +287,33 @@ ul {
     color: #fff;
 }
 
-    .edit-task-button:hover {
-        background-color: #2980b9;
-    }
+.edit-task-button:hover {
+    background-color: #2980b9;
+}
 
 .close-description-button {
     background-color: #95a5a6;
     color: #fff;
 }
 
-    .close-description-button:hover {
-        background-color: #7f8c8d;
-    }
+.close-description-button:hover {
+    background-color: #7f8c8d;
+}
 
 .delete-task-button {
     background-color: #e74c3c;
     color: #fff;
 }
 
-    .delete-task-button:hover {
-        background-color: #c0392b;
-    }
+.delete-task-button:hover {
+    background-color: #c0392b;
+}
 
 /* Responsive Design */
 @media (max-width: 500px) {
     .modal-content {
-        width: 90%; /* Adjust modal width for smaller screens */
+        width: 90%;
+        /* Adjust modal width for smaller screens */
     }
 }
 
@@ -309,34 +322,34 @@ ul {
     margin-bottom: 20px;
 }
 
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-        color: #555;
-    }
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
 
-    .form-group input[type="text"],
-    .form-group input[type="date"],
-    .form-group input[type="datetime-local"],
-    .form-group textarea {
-        width: 100%;
-        padding: 10px;
-        border: 2px solid #ddd;
-        border-radius: 10px;
-        background-color: #fff;
-    }
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="datetime-local"],
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+}
 
-    .form-group textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
 
-        .form-group input[type="text"]:focus,
-        .form-group input[type="datetime-local"]:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #3498db;
-        }
+.form-group input[type="text"]:focus,
+.form-group input[type="datetime-local"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+}
 
 .color-options {
     display: flex;
@@ -345,19 +358,19 @@ ul {
 }
 
 .form-group select {
-    width: 100%; 
-    padding: 10px; 
-    border: 2px solid #ddd; 
-    border-radius: 10px; 
-    background-color: #fff; 
-    font-size: 1em; 
-    box-sizing: border-box; 
-    margin: 10px 0; 
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    font-size: 1em;
+    box-sizing: border-box;
+    margin: 10px 0;
 }
 
 .form-group select:focus {
     outline: none;
-    border-color: #3498db; 
+    border-color: #3498db;
 }
 
 
@@ -383,9 +396,9 @@ ul {
     transition: background-color 0.3s;
 }
 
-    .submit-button:hover {
-        background-color: #2980b9;
-    }
+.submit-button:hover {
+    background-color: #2980b9;
+}
 
 .cancel-button {
     padding: 10px 20px;
@@ -397,33 +410,38 @@ ul {
     transition: background-color 0.3s;
 }
 
-    .cancel-button:hover {
-        background-color: #95a5a6;
-    }
+.cancel-button:hover {
+    background-color: #95a5a6;
+}
 
 .start-calendar-icon {
-    color: green; /* Red color for urgent tasks */
+    color: green;
+    /* Red color for urgent tasks */
 }
 
 .end-calendar-icon {
-    color: red; /* Red color for urgent tasks */
+    color: red;
+    /* Red color for urgent tasks */
 }
 
 .start-clock-icon {
-    color: green; /* Orange color for clock icon in urgent tasks */
+    color: green;
+    /* Orange color for clock icon in urgent tasks */
 }
 
 .end-clock-icon {
-    color: red; /* Orange color for clock icon in urgent tasks */
+    color: red;
+    /* Orange color for clock icon in urgent tasks */
 }
 
 p strong {
-    color: #e74c3c; /* Make the text red for urgent emphasis */
+    color: #e74c3c;
+    /* Make the text red for urgent emphasis */
 }
 
 .modal-content p:last-child {
     font-weight: bold;
     font-size: 1.1em;
-    color: #3498db; /* Highlight remaining time in blue */
+    color: #3498db;
+    /* Highlight remaining time in blue */
 }
-

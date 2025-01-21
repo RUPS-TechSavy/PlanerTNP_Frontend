@@ -56,23 +56,23 @@ function Login() {
       const googleData = {
         Username: decoded.name,
         Email: decoded.email,
-        Password: token, 
+        Password: token,
       };
 
-    try {
-      const response = await axios.post(`${env.api}/auth/login`, googleData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      Cookie.set('signed_in_user', JSON.stringify(response.data));
-      navigate('/');
-      window.location.reload();
-    } catch (error) {
-      alert('Invalid email or password');
-      console.error(error);
-    }
-  };
+      try {
+        const response = await axios.post(`${env.api}/auth/login`, googleData, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        Cookie.set('signed_in_user', JSON.stringify(response.data));
+        navigate('/');
+        window.location.reload();
+      } catch (error) {
+        alert('Invalid email or password');
+        console.error(error);
+      }
+    };
 
   };
 
@@ -116,12 +116,14 @@ function Login() {
             Login
           </button>
           <div className="separator">Do you want to continue with Google?</div>
-          <GoogleLogin
-            onSuccess={handleGoogleLogin}
-            onError={() => {
-              console.error('Google Login Failed');
-            }}
-          />
+          <div className="google-login-container">
+            <GoogleLogin
+              onSuccess={handleGoogleLogin}
+              onError={() => {
+                console.error('Google Login Failed');
+              }}
+            />
+          </div>
           <div className="terms">
             By clicking continue, you agree to our{' '}
             <strong>Terms of Service</strong> and <strong>Privacy policy</strong>

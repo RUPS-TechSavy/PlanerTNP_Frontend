@@ -65,12 +65,12 @@ body, html {
 }
 
 /* Style for the unordered list */
-ul {
+.privacy-container ul {
     list-style: none; /* Remove default bullets */
     padding-left: 0; /* Remove default padding */
 }
 
-ul li {
+.privacy-container ul li {
     position: relative;
     padding-left: 20px; /* Space for custom bullet */
     font-size: 1.2em;
@@ -80,7 +80,7 @@ ul li {
 }
 
 /* Custom bullet points (using icons or shapes) */
-ul li::before {
+.privacy-container ul li::before {
     content: '\2022'; /* Unicode for bullet */
     font-size: 2em;
     color: #3498db; /* Change color of the bullet */
