@@ -1,5 +1,6 @@
 import axios from 'axios';
 import sha256 from 'crypto-js/sha256';
+import sha512 from 'crypto-js/sha512';
 import Cookie from 'js-cookie';
 import React, { useEffect, useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
@@ -51,11 +52,11 @@ function Register() {
     e.preventDefault();
     if (!isChecked) return;
 
-    const hashedPassword = sha256(formData.password).toString();
+    const hashedPassword = sha512(formData.password).toString();
     const data = {
       Username: formData.username,
       Email: formData.email,
-      Password: hashedPassword,
+      Password: sha256(formData.password).toString(),
       FirstName: formData.firstName || undefined,
       LastName: formData.lastName || undefined,
       Country: formData.country || undefined,
